@@ -1,13 +1,27 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { U235AstroUtilityService } from 'u235-astro-utility';
+import { interval } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   constructor(private utility: U235AstroUtilityService) {
-    utility.greetings();
+  }
+  ngOnInit(): void {
+    this.test2();
+  }
+  test1() {
+    const exoDec = [1, 36, 37, 16, 600000];  // declination of HAT-P-5 b: +36d 37m 16.6s
+    console.log(exoDec);
+    const exoEnc = this.utility.encodeAngleToMath(exoDec);
+    console.log(exoEnc);
+    console.log(this.utility.decodeAngleFromMath(exoEnc));
+  }
+  test2() {
+    interval(500).pipe(map(value => this.utility.decodeAngleFromMath(value / 250 - 5))).subscribe(console.log);
   }
 }
