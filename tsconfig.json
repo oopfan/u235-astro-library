@@ -14,7 +14,13 @@
     "lib": [
       "es2018",
       "dom"
-    ]
+    ],
+    "paths": {
+      "u235-astro-utility": [
+        "dist/u235-astro-utility/u235-astro-utility",
+        "dist/u235-astro-utility"
+      ]
+    }
   },
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,
