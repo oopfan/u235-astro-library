@@ -1,12 +1,9 @@
 import { NgModule } from '@angular/core';
-import { U235AstroUtilityComponent } from './u235-astro-utility.component';
-
-
 
 @NgModule({
-  declarations: [U235AstroUtilityComponent],
+  declarations: [],
   imports: [
   ],
-  exports: [U235AstroUtilityComponent]
+  exports: []
 })
 export class U235AstroUtilityModule { }

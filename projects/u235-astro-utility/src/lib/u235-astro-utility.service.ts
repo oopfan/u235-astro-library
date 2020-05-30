@@ -6,4 +6,8 @@ import { Injectable } from '@angular/core';
 export class U235AstroUtilityService {
 
   constructor() { }
+
+  greetings() {
+    console.log('Hello!');
+  }
 }
