@@ -16,9 +16,9 @@
       "dom"
     ],
     "paths": {
-      "u235-astro-utility": [
-        "dist/u235-astro-utility/u235-astro-utility",
-        "dist/u235-astro-utility"
+      "u235-astro": [
+        "dist/u235-astro/u235-astro",
+        "dist/u235-astro"
       ]
     }
   },

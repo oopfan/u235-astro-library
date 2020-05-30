@@ -120,38 +120,38 @@
         }
       }
     },
-    "u235-astro-utility": {
+    "u235-astro": {
       "projectType": "library",
-      "root": "projects/u235-astro-utility",
-      "sourceRoot": "projects/u235-astro-utility/src",
-      "prefix": "lib",
+      "root": "projects/u235-astro",
+      "sourceRoot": "projects/u235-astro/src",
+      "prefix": "",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-ng-packagr:build",
           "options": {
-            "tsConfig": "projects/u235-astro-utility/tsconfig.lib.json",
-            "project": "projects/u235-astro-utility/ng-package.json"
+            "tsConfig": "projects/u235-astro/tsconfig.lib.json",
+            "project": "projects/u235-astro/ng-package.json"
           },
           "configurations": {
             "production": {
-              "tsConfig": "projects/u235-astro-utility/tsconfig.lib.prod.json"
+              "tsConfig": "projects/u235-astro/tsconfig.lib.prod.json"
             }
           }
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "main": "projects/u235-astro-utility/src/test.ts",
-            "tsConfig": "projects/u235-astro-utility/tsconfig.spec.json",
-            "karmaConfig": "projects/u235-astro-utility/karma.conf.js"
+            "main": "projects/u235-astro/src/test.ts",
+            "tsConfig": "projects/u235-astro/tsconfig.spec.json",
+            "karmaConfig": "projects/u235-astro/karma.conf.js"
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": [
-              "projects/u235-astro-utility/tsconfig.lib.json",
-              "projects/u235-astro-utility/tsconfig.spec.json"
+              "projects/u235-astro/tsconfig.lib.json",
+              "projects/u235-astro/tsconfig.spec.json"
             ],
             "exclude": [
               "**/node_modules/**"

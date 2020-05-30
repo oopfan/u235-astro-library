@@ -1,5 +1,5 @@
 {
-  "name": "u235-astro-utility",
+  "name": "u235-astro",
   "version": "0.0.1",
   "peerDependencies": {
     "@angular/common": "^9.1.9",
