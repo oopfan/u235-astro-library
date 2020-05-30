@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { U235AstroUtilityService } from 'u235-astro-utility';
 
 @Component({
   selector: 'app-root',
@@ -6,4 +7,7 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
+  constructor(private utility: U235AstroUtilityService) {
+    utility.greetings();
+  }
 }
