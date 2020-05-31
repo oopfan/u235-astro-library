@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { U235AstroService } from 'u235-astro';
 import { interval, Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { FlashArg } from 'u235-astro';
 
 @Component({
   selector: 'app-root',
@@ -10,8 +11,7 @@ import { map } from 'rxjs/operators';
 })
 export class AppComponent implements OnInit {
   altitude$: Observable<number[]>;
-  altitudeChanged = new Subject<any>();
-  altitudeChangedCount = 0;
+  altitudeChanged = new Subject<FlashArg>();
 
   constructor(private utility: U235AstroService) {}
 
@@ -32,8 +32,8 @@ export class AppComponent implements OnInit {
   }
 
   onAltitudeChanged() {
-    this.altitudeChanged.next(++this.altitudeChangedCount);
-    // this.altitudeChanged.next({ watch: ++this.altitudeChangedCount, backgroundColor: 'red' });
+    this.altitudeChanged.next({});
+    // this.altitudeChanged.next({ backgroundColor: 'red' });
   }
 
 }
