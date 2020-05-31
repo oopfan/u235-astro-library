@@ -18,6 +18,12 @@ export class AppComponent implements OnInit {
   altitudeChanged = new Subject<FlashArg>();
   azimuth$: Observable<number[]>;
   azimuthChanged = new Subject<FlashArg>();
+  hourAngle$: Observable<number[]>;
+  hourAngleChanged = new Subject<FlashArg>();
+  latitude$: Observable<number[]>;
+  latitudeChanged = new Subject<FlashArg>();
+  longitude$: Observable<number[]>;
+  longitudeChanged = new Subject<FlashArg>();
 
   constructor(private utility: U235AstroService) {}
 
@@ -36,8 +42,11 @@ export class AppComponent implements OnInit {
   test2() {
     this.altitude$ = interval(1000).pipe(map(value => this.utility.decodeAngleFromMath(90 - value / 60)));
     this.azimuth$ = interval(1667).pipe(map(value => this.utility.decodeAngleFromMath(180 + value / 60)));
+    this.hourAngle$ = interval(1186).pipe(map(value => this.utility.decodeAngleFromMath((value / 4 - 15) / 15)));
     this.rightAscension$ = interval(1844).pipe(map(value => this.utility.decodeAngleFromMath((180 + value / 240) / 15)));
     this.declination$ = interval(1392).pipe(map(value => this.utility.decodeAngleFromMath(20 + value / 3600)));
+    this.latitude$ = interval(1510).pipe(map(value => this.utility.decodeAngleFromMath(50 - value / 3600)));
+    this.longitude$ = interval(1925).pipe(map(value => this.utility.decodeAngleFromMath(5 - value / 3600)));
   }
 
   onAltitudeChanged() {
@@ -50,6 +59,11 @@ export class AppComponent implements OnInit {
     this.azimuthChanged.next({ backgroundColor: 'green' });
   }
 
+  onHourAngleChanged() {
+    // this.hourAngleChanged.next({});
+    this.hourAngleChanged.next({ backgroundColor: 'gold' });
+  }
+
   onRightAscensionChanged() {
     // this.rightAscensionChanged.next({});
     this.rightAscensionChanged.next({ backgroundColor: 'orange' });
@@ -58,6 +72,16 @@ export class AppComponent implements OnInit {
   onDeclinationChanged() {
     // this.declinationChanged.next({});
     this.declinationChanged.next({ backgroundColor: 'blue' });
+  }
+
+  onLatitudeChanged() {
+    // this.latitudeChanged.next({});
+    this.latitudeChanged.next({ backgroundColor: 'brown' });
+  }
+
+  onLongitudeChanged() {
+    // this.longitudeChanged.next({});
+    this.longitudeChanged.next({ backgroundColor: 'pink' });
   }
 
 }

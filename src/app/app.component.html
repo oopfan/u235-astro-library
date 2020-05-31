@@ -1,3 +1,21 @@
+<div *ngIf="latitude$ | async as latitude">
+    Latitude:&nbsp;
+    <u235-astro-latitude
+        [decodedAngle]="latitude"
+        (notifyChange)="onLatitudeChanged()"
+        [u235-astro-flash]="latitudeChanged.asObservable()"
+        >
+    </u235-astro-latitude>
+</div>
+<div *ngIf="longitude$ | async as longitude">
+    Longitude:&nbsp;
+    <u235-astro-longitude
+        [decodedAngle]="longitude"
+        (notifyChange)="onLongitudeChanged()"
+        [u235-astro-flash]="longitudeChanged.asObservable()"
+        >
+    </u235-astro-longitude>
+</div>
 <div *ngIf="rightAscension$ | async as rightAscension">
     Right Ascension:&nbsp;
     <u235-astro-right-ascension
@@ -33,4 +51,13 @@
         [u235-astro-flash]="azimuthChanged.asObservable()"
         >
     </u235-astro-azimuth>
+</div>
+<div *ngIf="hourAngle$ | async as hourAngle">
+    Hour Angle:&nbsp;
+    <u235-astro-hour-angle
+        [decodedAngle]="hourAngle"
+        (notifyChange)="onHourAngleChanged()"
+        [u235-astro-flash]="hourAngleChanged.asObservable()"
+        >
+    </u235-astro-hour-angle>
 </div>
