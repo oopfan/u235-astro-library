@@ -1,3 +1,21 @@
+<div *ngIf="rightAscension$ | async as rightAscension">
+    Right Ascension:&nbsp;
+    <u235-astro-right-ascension
+        [decodedAngle]="rightAscension"
+        (notifyChange)="onRightAscensionChanged()"
+        [u235-astro-flash]="rightAscensionChanged.asObservable()"
+        >
+    </u235-astro-right-ascension>
+</div>
+<div *ngIf="declination$ | async as declination">
+    Declination:&nbsp;
+    <u235-astro-declination
+        [decodedAngle]="declination"
+        (notifyChange)="onDeclinationChanged()"
+        [u235-astro-flash]="declinationChanged.asObservable()"
+        >
+    </u235-astro-declination>
+</div>
 <div *ngIf="altitude$ | async as altitude">
     Altitude:&nbsp;
     <u235-astro-altitude

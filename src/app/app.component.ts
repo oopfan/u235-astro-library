@@ -10,6 +10,10 @@ import { FlashArg } from 'u235-astro';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
+  rightAscension$: Observable<number[]>;
+  rightAscensionChanged = new Subject<FlashArg>();
+  declination$: Observable<number[]>;
+  declinationChanged = new Subject<FlashArg>();
   altitude$: Observable<number[]>;
   altitudeChanged = new Subject<FlashArg>();
   azimuth$: Observable<number[]>;
@@ -32,6 +36,8 @@ export class AppComponent implements OnInit {
   test2() {
     this.altitude$ = interval(1000).pipe(map(value => this.utility.decodeAngleFromMath(90 - value / 60)));
     this.azimuth$ = interval(1667).pipe(map(value => this.utility.decodeAngleFromMath(180 + value / 60)));
+    this.rightAscension$ = interval(1844).pipe(map(value => this.utility.decodeAngleFromMath((180 + value / 240) / 15)));
+    this.declination$ = interval(1392).pipe(map(value => this.utility.decodeAngleFromMath(20 + value / 3600)));
   }
 
   onAltitudeChanged() {
@@ -42,6 +48,16 @@ export class AppComponent implements OnInit {
   onAzimuthChanged() {
     // this.azimuthChanged.next({});
     this.azimuthChanged.next({ backgroundColor: 'green' });
+  }
+
+  onRightAscensionChanged() {
+    // this.rightAscensionChanged.next({});
+    this.rightAscensionChanged.next({ backgroundColor: 'orange' });
+  }
+
+  onDeclinationChanged() {
+    // this.declinationChanged.next({});
+    this.declinationChanged.next({ backgroundColor: 'blue' });
   }
 
 }
