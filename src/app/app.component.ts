@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { U235AstroService } from 'u235-astro';
-import { interval, Observable } from 'rxjs';
+import { interval, Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Component({
@@ -10,7 +10,8 @@ import { map } from 'rxjs/operators';
 })
 export class AppComponent implements OnInit {
   altitude$: Observable<number[]>;
-  altitudeChanged = 0;
+  altitudeChanged = new Subject<any>();
+  altitudeChangedCount = 0;
 
   constructor(private utility: U235AstroService) {}
 
@@ -27,13 +28,12 @@ export class AppComponent implements OnInit {
   }
 
   test2() {
-    this.altitude$ = interval(500).pipe(map(value => this.utility.decodeAngleFromMath(value / 200 - 5)));
+    this.altitude$ = interval(1000).pipe(map(value => this.utility.decodeAngleFromMath(value / 60 - 5)));
   }
 
   onAltitudeChanged() {
-    setTimeout(() => {
-      this.altitudeChanged++;
-    }, 0);
+    this.altitudeChanged.next(++this.altitudeChangedCount);
+    // this.altitudeChanged.next({ watch: ++this.altitudeChangedCount, backgroundColor: 'red' });
   }
 
 }
