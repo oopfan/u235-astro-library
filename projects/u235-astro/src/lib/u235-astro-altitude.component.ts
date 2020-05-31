@@ -17,7 +17,8 @@ export class U235AstroAltitudeComponent implements OnInit, OnChanges {
   minutes = '';
   plusminus = '';
   
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit() {
     this.update();

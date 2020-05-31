@@ -10,6 +10,7 @@ import { map } from 'rxjs/operators';
 })
 export class AppComponent implements OnInit {
   altitude$: Observable<number[]>;
+  altitudeChanged = 0;
 
   constructor(private utility: U235AstroService) {}
 
@@ -27,6 +28,12 @@ export class AppComponent implements OnInit {
 
   test2() {
     this.altitude$ = interval(500).pipe(map(value => this.utility.decodeAngleFromMath(value / 200 - 5)));
+  }
+
+  onAltitudeChanged() {
+    setTimeout(() => {
+      this.altitudeChanged++;
+    }, 0);
   }
 
 }

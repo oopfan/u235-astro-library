@@ -1,1 +1,7 @@
-<u235-astro-altitude *ngIf="altitude$ | async as altitude" [decodedAngle]="altitude"></u235-astro-altitude>
+<u235-astro-altitude
+    *ngIf="altitude$ | async as altitude"
+    [decodedAngle]="altitude"
+    (notifyChange)="onAltitudeChanged()"
+    [u235-astro-flash]="altitudeChanged"
+    >
+</u235-astro-altitude>
