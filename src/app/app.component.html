@@ -1,7 +1,18 @@
-<u235-astro-altitude
-    *ngIf="altitude$ | async as altitude"
-    [decodedAngle]="altitude"
-    (notifyChange)="onAltitudeChanged()"
-    [u235-astro-flash]="altitudeChanged.asObservable()"
-    >
-</u235-astro-altitude>
+<div *ngIf="altitude$ | async as altitude">
+    Altitude:&nbsp;
+    <u235-astro-altitude
+        [decodedAngle]="altitude"
+        (notifyChange)="onAltitudeChanged()"
+        [u235-astro-flash]="altitudeChanged.asObservable()"
+        >
+    </u235-astro-altitude>
+</div>
+<div *ngIf="azimuth$ | async as azimuth">
+    Azimuth:&nbsp;
+    <u235-astro-azimuth
+        [decodedAngle]="azimuth"
+        (notifyChange)="onAzimuthChanged()"
+        [u235-astro-flash]="azimuthChanged.asObservable()"
+        >
+    </u235-astro-azimuth>
+</div>

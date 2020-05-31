@@ -12,6 +12,8 @@ import { FlashArg } from 'u235-astro';
 export class AppComponent implements OnInit {
   altitude$: Observable<number[]>;
   altitudeChanged = new Subject<FlashArg>();
+  azimuth$: Observable<number[]>;
+  azimuthChanged = new Subject<FlashArg>();
 
   constructor(private utility: U235AstroService) {}
 
@@ -28,12 +30,18 @@ export class AppComponent implements OnInit {
   }
 
   test2() {
-    this.altitude$ = interval(1000).pipe(map(value => this.utility.decodeAngleFromMath(value / 60 - 5)));
+    this.altitude$ = interval(1000).pipe(map(value => this.utility.decodeAngleFromMath(90 - value / 60)));
+    this.azimuth$ = interval(1667).pipe(map(value => this.utility.decodeAngleFromMath(180 + value / 60)));
   }
 
   onAltitudeChanged() {
-    this.altitudeChanged.next({});
-    // this.altitudeChanged.next({ backgroundColor: 'red' });
+    // this.altitudeChanged.next({});
+    this.altitudeChanged.next({ backgroundColor: 'red' });
+  }
+
+  onAzimuthChanged() {
+    // this.azimuthChanged.next({});
+    this.azimuthChanged.next({ backgroundColor: 'green' });
   }
 
 }
