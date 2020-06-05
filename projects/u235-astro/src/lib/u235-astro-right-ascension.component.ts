@@ -1,23 +1,24 @@
 import { Component, Input, Output, OnInit, OnChanges, EventEmitter } from '@angular/core';
+import { U235AstroService } from './u235-astro.service';
 
 @Component({
   selector: 'u235-astro-right-ascension',
   template: `
     <span>
-      {{hours}}<sup>h</sup> {{minutes}}<sup>m</sup> {{seconds}}<sup>s</sup>
+      {{hour}}<sup>h</sup> {{minute}}<sup>m</sup> {{second}}<sup>s</sup>
     </span>
   `,
   styles: [
   ]
 })
 export class U235AstroRightAscensionComponent implements OnInit, OnChanges {
-  @Input() decodedAngle = [1, 0, 0, 0, 0];
+  @Input() hours: number;
   @Output() notifyChange:EventEmitter<void> = new EventEmitter();
-  hours = '';
-  minutes = '';
-  seconds = '';
+  hour = '';
+  minute = '';
+  second = '';
 
-  constructor() { }
+  constructor(private utility: U235AstroService) {}
 
   ngOnInit() {
     this.update();
@@ -28,20 +29,27 @@ export class U235AstroRightAscensionComponent implements OnInit, OnChanges {
   }
 
   private update() {
-    let temp = '0' + this.decodedAngle[1].toFixed(0);
-    const hours = temp.slice(temp.length - 2);
+    if (isNaN(this.hours)) {
+      return;
+    }
+    const hr = Math.min(24, Math.max(0, this.hours));
+    const decoded = this.utility.decodeAngleFromMath(hr);
 
-    temp = '0' + this.decodedAngle[2].toFixed(0);
-    const minutes = temp.slice(temp.length - 2);
+    let str = '0' + decoded[1].toFixed(0);
+    const hour = str.slice(str.length - 2);
 
-    temp = '0' + this.decodedAngle[3].toFixed(0);
-    const seconds = temp.slice(temp.length - 2);
+    str = '0' + decoded[2].toFixed(0);
+    const minute = str.slice(str.length - 2);
 
-    if (hours !== this.hours || minutes !== this.minutes || seconds !== this.seconds) {
-      this.hours = hours;
-      this.minutes = minutes;
-      this.seconds = seconds;
+    str = '0' + decoded[3].toFixed(0);
+    const second = str.slice(str.length - 2);
+
+    if (hour !== this.hour || minute !== this.minute || second !== this.second) {
+      this.hour = hour;
+      this.minute = minute;
+      this.second = second;
       this.notifyChange.emit();
     }
   }
+
 }

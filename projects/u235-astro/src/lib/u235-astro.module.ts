@@ -6,6 +6,7 @@ import { U235AstroDeclinationComponent } from './u235-astro-declination.componen
 import { U235AstroLatitudeComponent } from './u235-astro-latitude.component';
 import { U235AstroLongitudeComponent } from './u235-astro-longitude.component';
 import { U235AstroHourAngleComponent } from './u235-astro-hour-angle.component';
+import { U235AstroTimeComponent } from './u235-astro-time.component';
 import { U235AstroFlashDirective } from './u235-astro-flash.directive';
 
 @NgModule({
@@ -17,6 +18,7 @@ import { U235AstroFlashDirective } from './u235-astro-flash.directive';
     U235AstroLatitudeComponent,
     U235AstroLongitudeComponent,
     U235AstroHourAngleComponent,
+    U235AstroTimeComponent,
     U235AstroFlashDirective
   ],
   imports: [
@@ -29,6 +31,7 @@ import { U235AstroFlashDirective } from './u235-astro-flash.directive';
     U235AstroLatitudeComponent,
     U235AstroLongitudeComponent,
     U235AstroHourAngleComponent,
+    U235AstroTimeComponent,
     U235AstroFlashDirective
   ]
 })

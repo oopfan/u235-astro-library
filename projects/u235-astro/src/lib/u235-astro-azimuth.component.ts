@@ -1,23 +1,23 @@
 import { Component, Input, Output, OnInit, OnChanges, EventEmitter } from '@angular/core';
+import { U235AstroService } from './u235-astro.service';
 
 @Component({
   selector: 'u235-astro-azimuth',
   template: `
     <span>
-      +{{degrees}}&deg; {{minutes}}'
+      +{{degree}}&deg; {{minute}}'
     </span>
   `,
   styles: [
   ]
 })
 export class U235AstroAzimuthComponent implements OnInit, OnChanges {
-  @Input() decodedAngle = [1, 0, 0, 0, 0];
+  @Input() degrees: number;
   @Output() notifyChange:EventEmitter<void> = new EventEmitter();
-  degrees = '';
-  minutes = '';
+  degree = '';
+  minute = '';
 
-  constructor() {
-  }
+  constructor(private utility: U235AstroService) {}
 
   ngOnInit() {
     this.update();
@@ -28,24 +28,30 @@ export class U235AstroAzimuthComponent implements OnInit, OnChanges {
   }
 
   private update() {
-    let temp: string;
-    let degrees: string;
+    if (isNaN(this.degrees)) {
+      return;
+    }
+    const deg = Math.min(360, Math.max(0, this.degrees));
+    const decoded = this.utility.decodeAngleFromMath(deg);
 
-    if (this.decodedAngle[1] < 100) {
-      temp = '0' + this.decodedAngle[1].toFixed(0);
-      degrees = temp.slice(temp.length - 2);
+    let str: string;
+    let degree: string;
+
+    if (decoded[1] < 100) {
+      str = '0' + decoded[1].toFixed(0);
+      degree = str.slice(str.length - 2);
     }
     else {
-      temp = this.decodedAngle[1].toFixed(0);
-      degrees = temp;
+      str = decoded[1].toFixed(0);
+      degree = str;
     }
 
-    temp = '0' + this.decodedAngle[2].toFixed(0);
-    const minutes = temp.slice(temp.length - 2);
+    str = '0' + decoded[2].toFixed(0);
+    const minute = str.slice(str.length - 2);
 
-    if (degrees !== this.degrees || minutes !== this.minutes) {
-      this.degrees = degrees;
-      this.minutes = minutes;
+    if (degree !== this.degree || minute !== this.minute) {
+      this.degree = degree;
+      this.minute = minute;
       this.notifyChange.emit();
     }
   }

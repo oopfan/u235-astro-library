@@ -1,24 +1,25 @@
 import { Component, Input, Output, OnInit, OnChanges, EventEmitter } from '@angular/core';
+import { U235AstroService } from './u235-astro.service';
 
 @Component({
   selector: 'u235-astro-declination',
   template: `
     <span>
-      {{plusminus}}{{degrees}}&deg; {{minutes}}' {{seconds}}"
+      {{plusminus}}{{degree}}&deg; {{minute}}' {{second}}"
     </span>
   `,
   styles: [
   ]
 })
 export class U235AstroDeclinationComponent implements OnInit, OnChanges {
-  @Input() decodedAngle = [1, 0, 0, 0, 0];
+  @Input() degrees: number;
   @Output() notifyChange:EventEmitter<void> = new EventEmitter();
-  degrees = '';
-  minutes = '';
-  seconds = '';
   plusminus = '';
+  degree = '';
+  minute = '';
+  second = '';
   
-  constructor() { }
+  constructor(private utility: U235AstroService) {}
 
   ngOnInit() {
     this.update();
@@ -29,21 +30,27 @@ export class U235AstroDeclinationComponent implements OnInit, OnChanges {
   }
 
   private update() {
-    let temp = '0' + this.decodedAngle[1].toFixed(0);
-    const degrees = temp.slice(temp.length - 2);
+    if (isNaN(this.degrees)) {
+      return;
+    }
+    const deg = Math.min(90, Math.max(-90, this.degrees));
+    const decoded = this.utility.decodeAngleFromMath(deg);
 
-    temp = '0' + this.decodedAngle[2].toFixed(0);
-    const minutes = temp.slice(temp.length - 2);
+    const plusminus = decoded[0] > 0 ? '+' : '-';
 
-    temp = '0' + this.decodedAngle[3].toFixed(0);
-    const seconds = temp.slice(temp.length - 2);
+    let str = '0' + decoded[1].toFixed(0);
+    const degree = str.slice(str.length - 2);
 
-    const plusminus = this.decodedAngle[0] > 0 ? '+' : '-';
+    str = '0' + decoded[2].toFixed(0);
+    const minute = str.slice(str.length - 2);
 
-    if (degrees !== this.degrees || minutes !== this.minutes || seconds !== this.seconds || plusminus !== this.plusminus) {
-      this.degrees = degrees;
-      this.minutes = minutes;
-      this.seconds = seconds;
+    str = '0' + decoded[3].toFixed(0);
+    const second = str.slice(str.length - 2);
+
+    if (plusminus !== this.plusminus || degree !== this.degree || minute !== this.minute || second !== this.second) {
+      this.degree = degree;
+      this.minute = minute;
+      this.second = second;
       this.plusminus = plusminus;
       this.notifyChange.emit();
     }

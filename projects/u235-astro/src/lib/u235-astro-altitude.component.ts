@@ -1,24 +1,24 @@
 import { Component, Input, Output, OnInit, OnChanges, EventEmitter } from '@angular/core';
+import { U235AstroService } from './u235-astro.service';
 
 @Component({
   selector: 'u235-astro-altitude',
   template: `
     <span>
-      {{plusminus}}{{degrees}}&deg; {{minutes}}'
+      {{plusminus}}{{degree}}&deg; {{minute}}'
     </span>
   `,
   styles: [
   ]
 })
 export class U235AstroAltitudeComponent implements OnInit, OnChanges {
-  @Input() decodedAngle = [1, 0, 0, 0, 0];
+  @Input() degrees: number;
   @Output() notifyChange:EventEmitter<void> = new EventEmitter();
-  degrees = '';
-  minutes = '';
   plusminus = '';
+  degree = '';
+  minute = '';
   
-  constructor() {
-  }
+  constructor(private utility: U235AstroService) {}
 
   ngOnInit() {
     this.update();
@@ -29,18 +29,24 @@ export class U235AstroAltitudeComponent implements OnInit, OnChanges {
   }
 
   private update() {
-    let temp = '0' + this.decodedAngle[1].toFixed(0);
-    const degrees = temp.slice(temp.length - 2);
+    if (isNaN(this.degrees)) {
+      return;
+    }
+    const deg = Math.min(90, Math.max(-90, this.degrees));
+    const decoded = this.utility.decodeAngleFromMath(deg);
 
-    temp = '0' + this.decodedAngle[2].toFixed(0);
-    const minutes = temp.slice(temp.length - 2);
+    const plusminus = decoded[0] > 0 ? '+' : '-';
 
-    const plusminus = this.decodedAngle[0] > 0 ? '+' : '-';
+    let str = '0' + decoded[1].toFixed(0);
+    const degree = str.slice(str.length - 2);
 
-    if (degrees !== this.degrees || minutes !== this.minutes || plusminus !== this.plusminus) {
-      this.degrees = degrees;
-      this.minutes = minutes;
+    str = '0' + decoded[2].toFixed(0);
+    const minute = str.slice(str.length - 2);
+
+    if (plusminus !== this.plusminus || degree !== this.degree || minute !== this.minute) {
       this.plusminus = plusminus;
+      this.degree = degree;
+      this.minute = minute;
       this.notifyChange.emit();
     }
   }

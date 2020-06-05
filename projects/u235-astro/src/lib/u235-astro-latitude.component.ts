@@ -1,25 +1,25 @@
 import { Component, Input, Output, OnInit, OnChanges, EventEmitter } from '@angular/core';
+import { U235AstroService } from './u235-astro.service';
 
 @Component({
   selector: 'u235-astro-latitude',
   template: `
     <span>
-      {{degrees}}&deg; {{minutes}}' {{seconds}}{{microseconds}}" {{northsouth}}
+      {{degree}}&deg; {{minute}}' {{second}}" {{northsouth}}
     </span>
   `,
   styles: [
   ]
 })
 export class U235AstroLatitudeComponent implements OnInit, OnChanges {
-  @Input() decodedAngle = [1, 0, 0, 0, 0];
+  @Input() degrees: number;
   @Output() notifyChange:EventEmitter<void> = new EventEmitter();
-  degrees = '';
-  minutes = '';
-  seconds = '';
-  microseconds = '';
+  degree = '';
+  minute = '';
+  second = '';
   northsouth = '';
 
-  constructor() {}
+  constructor(private utility: U235AstroService) {}
 
   ngOnInit() {
     this.update();
@@ -30,20 +30,26 @@ export class U235AstroLatitudeComponent implements OnInit, OnChanges {
   }
 
   private update() {
-    const degrees = this.decodedAngle[1].toFixed(0);
+    if (isNaN(this.degrees)) {
+      return;
+    }
+    const deg = Math.min(90, Math.max(-90, this.degrees));
+    const decoded = this.utility.decodeAngleFromMath(deg);
 
-    let temp = '0' + this.decodedAngle[2].toFixed(0);
-    const minutes = temp.slice(temp.length - 2);
+    const degree = decoded[1].toFixed(0);
 
-    temp = '0' + this.decodedAngle[3].toFixed(0);
-    const seconds = temp.slice(temp.length - 2);
+    let str = '0' + decoded[2].toFixed(0);
+    const minute = str.slice(str.length - 2);
 
-    const northsouth = this.decodedAngle[0] > 0 ? 'N' : 'S';
+    str = '0' + decoded[3].toFixed(0);
+    const second = str.slice(str.length - 2);
 
-    if (degrees !== this.degrees || minutes !== this.minutes || seconds !== this.seconds || northsouth !== this.northsouth) {
-      this.degrees = degrees;
-      this.minutes = minutes;
-      this.seconds = seconds;
+    const northsouth = decoded[0] > 0 ? 'N' : 'S';
+
+    if (degree !== this.degree || minute !== this.minute || second !== this.second || northsouth !== this.northsouth) {
+      this.degree = degree;
+      this.minute = minute;
+      this.second = second;
       this.northsouth = northsouth;
       this.notifyChange.emit();
     }

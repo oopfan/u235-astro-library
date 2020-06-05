@@ -1,12 +1,12 @@
 import { Directive, ElementRef, Input, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { FlashArg } from './u235-astro.interfaces';
+import { U235AstroFlashArg } from './u235-astro.interfaces';
 
 @Directive({
   selector: '[u235-astro-flash]'
 })
 export class U235AstroFlashDirective implements OnInit {
-  @Input('u235-astro-flash') arg: Observable<FlashArg>;
+  @Input('u235-astro-flash') arg: Observable<U235AstroFlashArg>;
   timerId = 0;
 
   constructor(private element: ElementRef) {}

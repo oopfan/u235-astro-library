@@ -1,23 +1,24 @@
 import { Component, Input, Output, OnInit, OnChanges, EventEmitter } from '@angular/core';
+import { U235AstroService } from './u235-astro.service';
 
 @Component({
   selector: 'u235-astro-hour-angle',
   template: `
     <span>
-      {{hours}}<sup>h</sup> {{minutes}}<sup>m</sup> {{eastwest}}
+      {{hour}}<sup>h</sup> {{minute}}<sup>m</sup> {{eastwest}}
     </span>
   `,
   styles: [
   ]
 })
 export class U235AstroHourAngleComponent implements OnInit, OnChanges {
-  @Input() decodedAngle = [1, 0, 0, 0, 0];
+  @Input() hours: number;
   @Output() notifyChange:EventEmitter<void> = new EventEmitter();
-  hours = '';
-  minutes = '';
+  hour = '';
+  minute = '';
   eastwest = '';
 
-  constructor() { }
+  constructor(private utility: U235AstroService) { }
 
   ngOnInit() {
     this.update();
@@ -28,17 +29,23 @@ export class U235AstroHourAngleComponent implements OnInit, OnChanges {
   }
 
   private update() {
-    let temp = '0' + this.decodedAngle[1].toFixed(0);
-    const hours = temp.slice(temp.length - 2);
+    if (isNaN(this.hours)) {
+      return;
+    }
+    const hr = Math.min(12, Math.max(-12, this.hours));
+    const decoded = this.utility.decodeAngleFromMath(hr);
 
-    temp = '0' + this.decodedAngle[2].toFixed(0);
-    const minutes = temp.slice(temp.length - 2);
+    let str = '0' + decoded[1].toFixed(0);
+    const hour = str.slice(str.length - 2);
 
-    const eastwest = this.decodedAngle[0] > 0 ? 'W' : 'E';
+    str = '0' + decoded[2].toFixed(0);
+    const minute = str.slice(str.length - 2);
 
-    if (hours !== this.hours || minutes !== this.minutes) {
-      this.hours = hours;
-      this.minutes = minutes;
+    const eastwest = decoded[0] > 0 ? 'W' : 'E';
+
+    if (hour !== this.hour || minute !== this.minute || eastwest !== this.eastwest) {
+      this.hour = hour;
+      this.minute = minute;
       this.eastwest = eastwest;
       this.notifyChange.emit();
     }

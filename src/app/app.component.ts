@@ -1,8 +1,30 @@
 import { Component, OnInit } from '@angular/core';
-import { U235AstroService } from 'u235-astro';
-import { interval, Observable, Subject } from 'rxjs';
+import { interval, Subject, of } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { FlashArg } from 'u235-astro';
+import { U235AstroFlashArg, U235AstroClock, U235AstroObservatory, U235AstroTarget } from 'u235-astro';
+
+class MyTarget extends U235AstroTarget {
+  azimuthChange = new Subject<U235AstroFlashArg>();
+  altitudeChange = new Subject<U235AstroFlashArg>();
+  hourAngleChange = new Subject<U235AstroFlashArg>();
+
+  constructor() {
+    super();
+  }
+
+  onAzimuthChange() {
+    this.azimuthChange.next({});
+}
+
+  onAltitudeChange() {
+    this.altitudeChange.next({});
+    // this.altitudeChange.next({ backgroundColor: 'red' });
+  }
+
+  onHourAngleChange() {
+    this.hourAngleChange.next({});
+  }
+}
 
 @Component({
   selector: 'app-root',
@@ -10,78 +32,85 @@ import { FlashArg } from 'u235-astro';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  rightAscension$: Observable<number[]>;
-  rightAscensionChanged = new Subject<FlashArg>();
-  declination$: Observable<number[]>;
-  declinationChanged = new Subject<FlashArg>();
-  altitude$: Observable<number[]>;
-  altitudeChanged = new Subject<FlashArg>();
-  azimuth$: Observable<number[]>;
-  azimuthChanged = new Subject<FlashArg>();
-  hourAngle$: Observable<number[]>;
-  hourAngleChanged = new Subject<FlashArg>();
-  latitude$: Observable<number[]>;
-  latitudeChanged = new Subject<FlashArg>();
-  longitude$: Observable<number[]>;
-  longitudeChanged = new Subject<FlashArg>();
 
-  constructor(private utility: U235AstroService) {}
+  encode = (degree: number, minute: number, second: number): number => {
+    return degree + (minute + second / 60) / 60;
+  }
+  
+  sites = [
+    {
+      name: 'New York, NY',
+      latitude: this.encode(40, 46, 53),
+      longitude: -this.encode(73, 58, 26)
+    },
+    {
+      name: 'London, UK',
+      latitude: this.encode(51, 31, 10),
+      longitude: -this.encode(0, 7, 37)
+    }
+  ];
+
+  celestialObjects = [
+    {
+      name: 'Polaris',
+      ra2000: this.encode(2, 31, 54),
+      de2000: this.encode(89, 15, 51)
+    },
+    {
+      name: 'Vega',
+      ra2000: this.encode(18, 36, 56),
+      de2000: this.encode(38, 47, 1)
+    },
+    {
+      name: 'M13',
+      ra2000: this.encode(16, 41, 42),
+      de2000: this.encode(36, 27, 39)
+    },
+    {
+      name: 'M27',
+      ra2000: this.encode(19, 59, 36),
+      de2000: this.encode(22, 43, 18)
+    },
+    {
+      name: 'M57',
+      ra2000: this.encode(18, 53, 35),
+      de2000: this.encode(33, 1, 47)
+    }
+  ]
+
+  clock = new U235AstroClock();
+  observatories: U235AstroObservatory[] = [];
+  targets: MyTarget[][] = [];
+
+  constructor() {}
 
   ngOnInit(): void {
-    this.test2();
-  }
+    this.clock.date$ = interval(1000).pipe(map(() => new Date()));
+    this.clock.init();
 
-  test1() {
-    const exoDec = [1, 36, 37, 16, 600000];  // declination of HAT-P-5 b: +36d 37m 16.6s
-    console.log(exoDec);
-    const exoEnc = this.utility.encodeAngleToMath(exoDec);
-    console.log(exoEnc);
-    console.log(this.utility.decodeAngleFromMath(exoEnc));
-  }
+    for (let site of this.sites) {
+      const observatory = new U235AstroObservatory();
+      observatory.name$ = of(site.name);
+      observatory.latitude$ = of(site.latitude);
+      observatory.longitude$ = of(site.longitude);
+      observatory.connect(this.clock);
+      observatory.init();
+      this.observatories.push(observatory);
+      const targets: MyTarget[] = [];
 
-  test2() {
-    this.altitude$ = interval(1000).pipe(map(value => this.utility.decodeAngleFromMath(90 - value / 60)));
-    this.azimuth$ = interval(1667).pipe(map(value => this.utility.decodeAngleFromMath(180 + value / 60)));
-    this.hourAngle$ = interval(1186).pipe(map(value => this.utility.decodeAngleFromMath((value / 4 - 15) / 15)));
-    this.rightAscension$ = interval(1844).pipe(map(value => this.utility.decodeAngleFromMath((180 + value / 240) / 15)));
-    this.declination$ = interval(1392).pipe(map(value => this.utility.decodeAngleFromMath(20 + value / 3600)));
-    this.latitude$ = interval(1510).pipe(map(value => this.utility.decodeAngleFromMath(50 - value / 3600)));
-    this.longitude$ = interval(1925).pipe(map(value => this.utility.decodeAngleFromMath(5 - value / 3600)));
-  }
+      for (let object of this.celestialObjects) {
+        const target = new MyTarget();
+        target.name$ = of(object.name);
+        target.equ2000$ = of({
+          rightAscension: object.ra2000,
+          declination: object.de2000
+        });
+        target.connect(observatory);
+        target.init();
+        targets.push(target);
+      }
 
-  onAltitudeChanged() {
-    // this.altitudeChanged.next({});
-    this.altitudeChanged.next({ backgroundColor: 'red' });
+      this.targets.push(targets);
+    }
   }
-
-  onAzimuthChanged() {
-    // this.azimuthChanged.next({});
-    this.azimuthChanged.next({ backgroundColor: 'green' });
-  }
-
-  onHourAngleChanged() {
-    // this.hourAngleChanged.next({});
-    this.hourAngleChanged.next({ backgroundColor: 'gold' });
-  }
-
-  onRightAscensionChanged() {
-    // this.rightAscensionChanged.next({});
-    this.rightAscensionChanged.next({ backgroundColor: 'orange' });
-  }
-
-  onDeclinationChanged() {
-    // this.declinationChanged.next({});
-    this.declinationChanged.next({ backgroundColor: 'blue' });
-  }
-
-  onLatitudeChanged() {
-    // this.latitudeChanged.next({});
-    this.latitudeChanged.next({ backgroundColor: 'brown' });
-  }
-
-  onLongitudeChanged() {
-    // this.longitudeChanged.next({});
-    this.longitudeChanged.next({ backgroundColor: 'pink' });
-  }
-
 }
