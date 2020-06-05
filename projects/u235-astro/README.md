@@ -1,24 +1,69 @@
-# U235Astro
+# u235-astro
 
-This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 9.1.9.
+> This Angular library contains a collection of components, directives and classes that are useful for creating Astronomy applications.
 
-## Code scaffolding
+Components include:
 
-Run `ng generate component component-name --project u235-astro` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project u235-astro`.
-> Note: Don't forget to add `--project u235-astro` or else it will be added to the default project in your `angular.json` file. 
+```html
+<u235-astro-altitude [degrees]="galaxy.alt"></u235-astro-altitude>
+<u235-astro-azimuth [degrees]="galaxy.az"></u235-astro-azimuth>
+<u235-astro-hour-angle [hours]="galaxy.ha"></u235-astro-hour-angle>
+<u235-astro-right-ascension [hours]="galaxy.ra"></u235-astro-right-ascension>
+<u235-astro-declination [degrees]="galaxy.dec"></u235-astro-declination>
+<u235-astro-latitude [degrees]="observer.lat"></u235-astro-latitude>
+<u235-astro-longitude [degrees]="observer.lon"></u235-astro-longitude>
+<u235-astro-time [hours]="observer.lmst"></u235-astro-time>
+```
 
-## Build
+Directives include:
 
-Run `ng build u235-astro` to build the project. The build artifacts will be stored in the `dist/` directory.
+```html
+[u235-astro-flash]="galaxy.altitudeChange.asObservable()"
+```
 
-## Publishing
+Classes include:
+```javascript
+// U235AstroClock
+// U235AstroObservatory
+// U235AstroTarget
 
-After building your library with `ng build u235-astro`, go to the dist folder `cd dist/u235-astro` and run `npm publish`.
+// Typical Usage:
 
-## Running unit tests
+clock = new U235AstroClock();
+clock.date$ = interval(1000).pipe(map(() => new Date()));
+clock.init();
 
-Run `ng test u235-astro` to execute the unit tests via [Karma](https://karma-runner.github.io).
+observatory = new U235AstroObservatory();
+// New York, NY:
+observatory.latitude$ = of(40.78139);
+observatory.longitude$ = of(-73.97389);
+observatory.connect(clock);
+observatory.init();
 
-## Further help
+target = new U235AstroTarget();
+// The star Vega:
+target.equ2000$ = of({
+    rightAscension: 18.61556,
+    declination: 38.78361
+});
+target.connect(observatory);
+target.init();
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+target.horNow$.subscribe(value => {
+    console.log('Azimuth:', value.azimuth);
+    console.log('Altitude:', value.altitude);
+});
+```
+
+Interfaces include:
+```javascript
+// U235AstroClockTick
+// U235AstroEquatorialCoordinates
+// U235AstroHorizontalCoordinates
+// U235AstroFlashArg
+```
+
+## Sample Application
+found here: 
+
+sample code at the GitHub repo.
