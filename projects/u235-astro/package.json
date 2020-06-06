@@ -1,6 +1,18 @@
 {
   "name": "u235-astro",
   "version": "0.0.1",
+  "description": "An Angular component library for astronomers",
+  "keywords": [
+    "angular",
+    "astronomy",
+    "astrophotography"
+  ],
+  "author": "Brian Morgan",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oopfan/u235-astro-library.git"
+  },
   "peerDependencies": {
     "@angular/common": "^9.1.9",
     "@angular/core": "^9.1.9"

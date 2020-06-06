@@ -18,7 +18,7 @@ Components include:
 Directives include:
 
 ```html
-[u235-astro-flash]="galaxy.altitudeChange.asObservable()"
+[u235-astro-flash]="altitudeChange.asObservable()"
 ```
 
 Interfaces include:
@@ -200,7 +200,7 @@ export interface U235AstroClockTick {
     dayFraction: number,    // UTC date fraction
     jd0: number,            // Julian Date at 12h UTC
     jd: number,             // Julian Date at moment
-    gmst0: number,          // Greenwish Sidereal Time at 12h UTC
+    gmst0: number,          // Greenwich Sidereal Time at 12h UTC
     gmst: number,           // Greenwich Sidereal Time at moment
     obliquityOfEcliptic: number,    // Inclination of Earth's equator
     precessionSinceJ2000: number,   // Precession in degrees

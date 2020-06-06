@@ -1,34 +1,18 @@
-# U235AstroLibrary
+# u235-astro-library
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 9.1.0.
+> This repository contains two projects. The main project is an Angular web app that shows off the features of the second project: an Angular library of components, directives, and classes that are useful for creating Astronomy applications.
 
-## Development server
+Please refer to the README of the **```u235-astro```** project for many more details.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+**```u235-astro```** is now an NPM package. Please visit [NPM](https://www.npmjs.com/) and search for it. Please do not mistake it for 'u235-astrolib'. That was my first NPM package having very limited functionality.
 
-## Code scaffolding
+If you wish you can clone this repo and run the web app locally:
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
-
-## Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
-
-
+1. Clone the repo.
+1. At the terminal run **```npm install```**
+1. Then **```ng build u235-astro```**
+1. Finally **```npm start```**
+1. Launch your browser and go to localhost:4200
 
 ## Live Demo Application
-Coming soon!
-
-sample code at the GitHub repo.
+Find it [here](https://u235-astro-library.now.sh/)
