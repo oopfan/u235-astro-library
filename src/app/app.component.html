@@ -1,12 +1,14 @@
 <div class="container">
     <h1 class="title">u235-astro-library</h1>
     <h2 class="subtitle">Sample Application</h2>
-    <p>
+    <div>
         <a href="https://github.com/oopfan/u235-astro-library" target="_blank" rel="noopener noreferrer">GitHub repo here.</a>
-        NPM package here.
-    </p>
-
+    </div>
+    <div>
+        <a href="https://www.npmjs.com/package/u235-astro" target="_blank" rel="noopener noreferrer">NPM package here.</a>
+    </div>
     <br />
+
     <div *ngIf="clock.clockTick$ | async as clockTick">
         <div>{{ clockTick.date.toUTCString() }}</div>
         <div>Greenwich Sidereal Time: <u235-astro-time [hours]="clockTick.gmst"></u235-astro-time></div>

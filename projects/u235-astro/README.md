@@ -39,6 +39,10 @@ U235AstroTarget
 
 Sample Implementation:
 ```javascript
+import { interval, of } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { U235AstroClock, U235AstroObservatory, U235AstroTarget} from 'u235-astro';
+
 const clock = new U235AstroClock();
 clock.date$ = interval(1000).pipe(map(() => new Date()));
 clock.init();
