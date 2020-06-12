@@ -2,8 +2,26 @@
 
 > This Angular library contains a collection of components, directives and classes that are useful for creating Astronomy applications.
 
-Components include:
+## How to use?
+```javascript
+import { U235AstroModule } from 'u235-astro';
 
+@NgModule({
+  declarations: [
+    AppComponent
+  ],
+  imports: [
+    BrowserModule,
+    U235AstroModule // <-- add the module in imports
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+```
+## Documentation
+
+### Components:
 ```html
 <u235-astro-altitude [degrees]="altitude"></u235-astro-altitude>
 <u235-astro-azimuth [degrees]="azimuth"></u235-astro-azimuth>
@@ -14,30 +32,151 @@ Components include:
 <u235-astro-longitude [degrees]="longitude"></u235-astro-longitude>
 <u235-astro-time [hours]="sideralTime"></u235-astro-time>
 ```
+* See section: Component Details
 
-Directives include:
-
+### Directives:
 ```html
 [u235-astro-flash]="altitudeChange.asObservable()"
 ```
+* See section: Directive Details
 
-Interfaces include:
+### Interfaces:
 ```javascript
-U235AstroClockTick
-U235AstroEquatorialCoordinates
-U235AstroHorizontalCoordinates
-U235AstroFlashArg
+// Emitted by clockTick$ Observable of U235AstroClock
+interface U235AstroClockTick {
+    date: Date,             // Date at moment
+    dayFraction: number,    // UTC date fraction
+    jd0: number,            // Julian Date at 0h UTC
+    jd: number,             // Julian Date at moment
+    gmst0: number,          // Greenwich Sidereal Time at 0h UTC
+    gmst: number,           // Greenwich Sidereal Time at moment
+    obliquityOfEcliptic: number,    // Inclination of Earth's equator
+    precessionSinceJ2000: number,   // Precession in degrees
+    matEquToEcl: U235AstroMatrix3D, // Transform Equ to Ecl coords.
+    matEclToEqu: U235AstroMatrix3D, // Transform Ecl to Equ coords.
+    matPrecessToDate: U235AstroMatrix3D // Precession Transform
+}
+
+// Emitted by equ2000$ and equNow$ Observables of U235AstroTarget  
+interface U235AstroEquatorialCoordinates {
+    rightAscension: number;
+    declination: number;
+}
+
+// Emitted by horNow$ Observable of U235AstroTarget
+interface U235AstroHorizontalCoordinates {
+    azimuth: number;
+    altitude: number;
+}
+
+// Controls flash properties (see docs for u235-astro-flash)
+interface U235AstroFlashArg {
+    backgroundColor?: string,
+    transitionDuration?: string
+}
 ```
 
-Classes include:
+### Classes:
 ```javascript
-// Uses RxJs Observables:
-U235AstroClock
-U235AstroObservatory
-U235AstroTarget
+class U235AstroClock {
+    // Inputs:
+    date$: Observable<Date>;
+    // Outputs:
+    clockTick$: Observable<U235AstroClockTick>;
+    // Methods:
+    init();
+}
+
+class U235AstroObservatory {
+    // Inputs:
+    name$: Observable<string>;
+    latitude$: Observable<number>;
+    longitude$: Observable<number>;
+    clockTick$: Observable<U235AstroClockTick>;
+    // Outputs:
+    lmst$: Observable<number>;
+    matEquToHor$: Observable<U235AstroMatrix3D>;
+    // Methods:
+    connect(clock: U235AstroClock);
+    init();
+}
+
+class U235AstroTarget {
+    // Inputs:
+    name$: Observable<string>;
+    equ2000$: Observable<U235AstroEquatorialCoordinates>;
+    clockTick$: Observable<U235AstroClockTick>;
+    matEquToHor$: Observable<U235AstroMatrix3D>;
+    lmst$: Observable<number>;
+    // Outputs:
+    equNow$: Observable<U235AstroEquatorialCoordinates>;
+    horNow$: Observable<U235AstroHorizontalCoordinates>;
+    hourAngle$: Observable<number>;
+    // Methods:
+    connect(observatory: U235AstroObservatory);
+    init();
+}
+
+class U235AstroSNR {
+    // Inputs:
+    fluxAttenuation$: Observable<number>;
+    aperture$: Observable<number>;
+    focalLength$: Observable<number>;
+    centralObstruction$: Observable<number>;
+    totalReflectanceTransmittance$: Observable<number>;
+    pixelSize$: Observable<number>;
+    binning$: Observable<number>;
+    surfaceBrightness$: Observable<number>;
+    readNoise$: Observable<number>;
+    darkCurrent$: Observable<number>;
+    quantumEfficiency$: Observable<number>;
+    skyBrightness$: Observable<number>;
+    exposure$: Observable<number>;
+    // Outputs:
+    clearApertureEquivalent$: Observable<number>;
+    imageResolution$: Observable<number>;
+    pixelSurface$: Observable<number>;
+    targetElectronsPerSecond$: Observable<number>;
+    targetElectronsPerSub$: Observable<number>;
+    shotNoise$: Observable<number>;
+    skyElectronsPerSecond$: Observable<number>;
+    skyElectronsPerSub$: Observable<number>;
+    skyNoise$: Observable<number>;
+    darkSignalPerSub$: Observable<number>;
+    darkNoise$: Observable<number>;
+    totalNoisePerSub$: Observable<number>;
+    signalToNoisePerSub$: Observable<number>;
+    // Methods:
+    init();
+}
+
+// Used internally but you can use them too:
+class U235AstroVector3D;
+class U235AstroMatrix3D;
 ```
 
-Sample Implementation:
+### Service:
+```javascript
+class U235AstroService {
+    // Commonly used functions:
+    toRadians(degrees: number): number;
+    toDegrees(radians: number): number;
+    calculateAirmass(altitudeDegrees: number): number;
+    calculateRedExtinction(airmass: number): number;
+    calculateGreenExtinction(airmass: number): number;
+    calculateBlueExtinction(airmass: number): number;
+    encodeAngleToMath(dec: number[]): number;
+    decodeAngleFromMath(enc: number): number[];
+    encodeAngleToStorage(dec: number[]): number;
+    decodeAngleFromStorage(enc: number): number[];
+    colorFluxAttenuation([colorBalance, extinction]: number[]): number;
+    luminanceFluxAttenuation([redFluxAttenuation, greenFluxAttenuation, blueFluxAttenuation]: number[]): number;
+}
+```
+
+### Code Samples:
+
+Sample Implementation #1
 ```javascript
 import { interval, of } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -67,27 +206,51 @@ target.horNow$.subscribe(value => {
     console.log('Azimuth:', value.azimuth);
     console.log('Altitude:', value.altitude);
 });
+// Output updates every second, for example:
+// Azimuth: 104.179047
+// Altitude: 53.014798
 ```
-## How to use?
+* Notice how **```U235AstroClock```** drives **```U235AstroObservatory```**, and **```U235AstroObservatory```** drives **```U235AstroTarget```**.
+* Notice the calls to **```connect()```** between objects.
+* Notice the call to **```init()```**. It wires-up the logic between the inputs and outputs. Call this after connect().
+* Notice how inputs are defined before calling connect() or init().
+* Tip: Open up the developer's console of your browser while developing code. Look for messages like 'Requires...". This is a warning telling you that you subscribed to an output that depends on an input that was not defined.
+
+Sample Implementation #2
 ```javascript
-import { U235AstroModule } from 'u235-astro';
+import { of } from 'rxjs';
+import { U235AstroSNR } from 'u235-astro';
 
-@NgModule({
-  declarations: [
-    AppComponent
-  ],
-  imports: [
-    BrowserModule,
-    U235AstroModule // <-- add the module in imports
-  ],
-  providers: [],
-  bootstrap: [AppComponent]
-})
-export class AppModule { }
+const snrModel = new U235AstroSNR();
+
+// William Optics ZenithStar 71:
+snrModel.aperture$ = of(71);
+snrModel.focalLength$ = of(418);
+snrModel.centralObstruction$ = of(0);
+snrModel.totalReflectanceTransmittance$ = of(0.99);
+// Atik 314E:
+snrModel.pixelSize$ = of(4.65);
+snrModel.readNoise$ = of(5.3);
+snrModel.darkCurrent$ = of(0.1);
+snrModel.quantumEfficiency$ = of(43);
+// Bortle 5:
+snrModel.skyBrightness$ = of(20.02);
+// M81:
+snrModel.surfaceBrightness$ = of(21.7);
+// Exposure:
+snrModel.fluxAttenuation$ = of(1);  // assume zenith and unity relative QE
+snrModel.binning$ = of(1);
+snrModel.exposure$ = of(90);
+snrModel.init();
+
+snrModel.signalToNoisePerSub$.subscribe(value => console.log(`SNR per sub: ${value}`));
+// Output:
+// SNR per sub: 1.3354560781189644
 ```
-## Documentation
 
-Component **```u235-astro-altitude```** displays the given altitude in the following format: *[+/-]dd&deg; mm'*
+## Component Details
+
+### **```u235-astro-altitude```** displays the given altitude in the following format: *[+/-]dd&deg; mm'*
 ```html
 <u235-astro-altitude
     [degrees]="altitude"
@@ -99,7 +262,7 @@ Component **```u235-astro-altitude```** displays the given altitude in the follo
 * **```(notifyChange)```** is optional. The component will call your method whenever [degrees] changes. The method will only be called when the value changes by the displayed precision: arc-minutes.
 * **```[u235-astro-flash]```** is optional. It may be used to give a visual cue in the form of a blue background color flash to indicate that the value changed. See the documentation for 'u235-astro-flash' for usage details.
 
-Component **```u235-astro-azimuth```** displays the given azimuth in the following format: *+ddd&deg; mm'*
+### **```u235-astro-azimuth```** displays the given azimuth in the following format: *+ddd&deg; mm'*
 ```html
 <u235-astro-azimuth
     [degrees]="azimuth"
@@ -111,7 +274,7 @@ Component **```u235-astro-azimuth```** displays the given azimuth in the followi
 * **```(notifyChange)```** is optional. The component will call your method whenever [degrees] changes. The method will only be called when the value changes by the displayed precision: arc-minutes.
 * **```[u235-astro-flash]```** is optional. It may be used to give a visual cue in the form of a blue background color flash to indicate that the value changed. See the documentation for 'u235-astro-flash' for usage details.
 
-Component **```u235-astro-hour-angle```** displays the given hour angle in the following format: *hh<sup>h</sup> mm<sup>m</sup> [E/W]*
+### **```u235-astro-hour-angle```** displays the given hour angle in the following format: *hh<sup>h</sup> mm<sup>m</sup> [E/W]*
 ```html
 <u235-astro-hour-angle
     [hours]="hourAngle"
@@ -123,7 +286,7 @@ Component **```u235-astro-hour-angle```** displays the given hour angle in the f
 * **```(notifyChange)```** is optional. The component will call your method whenever [hours] changes. The method will only be called when the value changes by the displayed precision: minutes.
 * **```[u235-astro-flash]```** is optional. It may be used to give a visual cue in the form of a blue background color flash to indicate that the value changed. See the documentation for 'u235-astro-flash' for usage details.
 
-Component **```u235-astro-right-ascension displays```** the given right ascension in the following format: *hh<sup>h</sup> mm<sup>m</sup> ss<sup>s</sup>*
+### **```u235-astro-right-ascension displays```** the given right ascension in the following format: *hh<sup>h</sup> mm<sup>m</sup> ss<sup>s</sup>*
 ```html
 <u235-astro-right-ascension
     [hours]="rightAscension"
@@ -135,7 +298,7 @@ Component **```u235-astro-right-ascension displays```** the given right ascensio
 * **```(notifyChange)```** is optional. The component will call your method whenever [hours] changes. The method will only be called when the value changes by the displayed precision: seconds.
 * **```[u235-astro-flash]```** is optional. It may be used to give a visual cue in the form of a blue background color flash to indicate that the value changed. See the documentation for 'u235-astro-flash' for usage details.
 
-Component **```u235-astro-declination displays```** the given declination in the following format: *[+/-]dd&deg; mm' ss"*
+### **```u235-astro-declination displays```** the given declination in the following format: *[+/-]dd&deg; mm' ss"*
 ```html
 <u235-astro-declination
     [degrees]="declination"
@@ -147,7 +310,7 @@ Component **```u235-astro-declination displays```** the given declination in the
 * **```(notifyChange)```** is optional. The component will call your method whenever [degrees] changes. The method will only be called when the value changes by the displayed precision: arc-seconds.
 * **```[u235-astro-flash]```** is optional. It may be used to give a visual cue in the form of a blue background color flash to indicate that the value changed. See the documentation for 'u235-astro-flash' for usage details.
 
-Component **```u235-astro-latitude```** displays the given latitude in the following format: *dd&deg; mm' ss" [N/S]*
+### **```u235-astro-latitude```** displays the given latitude in the following format: *dd&deg; mm' ss" [N/S]*
 ```html
 <u235-astro-latitude
     [degrees]="latitude"
@@ -159,7 +322,7 @@ Component **```u235-astro-latitude```** displays the given latitude in the follo
 * **```(notifyChange)```** is optional. The component will call your method whenever [degrees] changes. The method will only be called when the value changes by the displayed precision: arc-seconds.
 * **```[u235-astro-flash]```** is optional. It may be used to give a visual cue in the form of a blue background color flash to indicate that the value changed. See the documentation for 'u235-astro-flash' for usage details.
 
-Component **```u235-astro-longitude```** displays the given longitude in the following format: *ddd&deg; mm' ss" [E/W]*
+### **```u235-astro-longitude```** displays the given longitude in the following format: *ddd&deg; mm' ss" [E/W]*
 ```html
 <u235-astro-longitude
     [degrees]="longitude"
@@ -171,7 +334,7 @@ Component **```u235-astro-longitude```** displays the given longitude in the fol
 * **```(notifyChange)```** is optional. The component will call your method whenever [degrees] changes. The method will only be called when the value changes by the displayed precision: arc-seconds.
 * **```[u235-astro-flash]```** is optional. It may be used to give a visual cue in the form of a blue background color flash to indicate that the value changed. See the documentation for 'u235-astro-flash' for usage details.
 
-Component **```u235-astro-time```** displays the given time in the following 24-hour format: *hh:mm:ss*
+### **```u235-astro-time```** displays the given time in the following 24-hour format: *hh:mm:ss*
 ```html
 <u235-astro-time
     [hours]="siderealTime"
@@ -183,58 +346,11 @@ Component **```u235-astro-time```** displays the given time in the following 24-
 * **```(notifyChange)```** is optional. The component will call your method whenever [hours] changes. The method will only be called when the value changes by the displayed precision: seconds.
 * **```[u235-astro-flash]```** is optional. It may be used to give a visual cue in the form of a blue background color flash to indicate that the value changed. See the documentation for 'u235-astro-flash' for usage details.
 
-Directive **```u235-astro-flash```** gives a visual cue in the form of a blue background color flash to indicate that an observed value changed.
+## Directive Details
+
+### **```u235-astro-flash```** gives a visual cue in the form of a blue background color flash to indicate that an observed value changed.
 ```html
 [u235-astro-flash]="subject.asObservable()"
 ```
 * **```subject```** is an RxJs Subject. Your client code will call the next() method to trigger the directive to flash the DOM element.
 * The **```next()```** method accepts an argument of type **```U235AstroFlashArg```**. It is an object having two properties: **```backgroundColor```** and **```transitionDuration```**. Both are optional. To keep the defaults pass an empty object to the method, that is **```next({})```**. backgroundColor can be a string like 'red' or 'green' or a color value; the default is '#70b5ff' which is a light steel blue. transitionDuration defaults to '0.4s'.
-
-Interfaces
-```javascript
-// Controls flash properties (see docs for u235-astro-flash)
-export interface U235AstroFlashArg {
-    backgroundColor?: string,
-    transitionDuration?: string
-}
-
-// Emitted by clockTick$ Observable of U235AstroClock
-export interface U235AstroClockTick {
-    date: Date,             // Date at moment
-    dayFraction: number,    // UTC date fraction
-    jd0: number,            // Julian Date at 0h UTC
-    jd: number,             // Julian Date at moment
-    gmst0: number,          // Greenwich Sidereal Time at 0h UTC
-    gmst: number,           // Greenwich Sidereal Time at moment
-    obliquityOfEcliptic: number,    // Inclination of Earth's equator
-    precessionSinceJ2000: number,   // Precession in degrees
-    matEquToEcl: U235AstroMatrix3D, // Transform Equ to Ecl coords.
-    matEclToEqu: U235AstroMatrix3D, // Transform Ecl to Equ coords.
-    matPrecessToDate: U235AstroMatrix3D // Precession Transform
-}
-
-// Emitted by equ2000$ and equNow$ Observables of U235AstroTarget  
-export interface U235AstroEquatorialCoordinates {
-    rightAscension: number;
-    declination: number;
-}
-
-// Emitted by horNow$ Observable of U235AstroTarget
-export interface U235AstroHorizontalCoordinates {
-    azimuth: number;
-    altitude: number;
-}
-```
-
-Classes
-```javascript
-U235AstroClock
-U235AstroObservatory
-U235AstroTarget
-```
-* Please refer to the **```Sample implementation```** farther up in this document. Also look at the full-featured app in the GitHub repo. It will show advanced usage.
-* Notice the event flow: **```U235AstroClock```** drives **```U235AstroObservatory```**, and **```U235AstroObservatory```** drives **```U235AstroTarget```**.
-* Notice the calls to **```connect()```** between objects.
-* Notice the call to **```init()```**. It wires-up the logic between the inputs and outputs. Call this after connect().
-* Notice how inputs are defined before calling connect() or init().
-* Tip: Open up the developer's console of your browser while developing code. Look for messages like 'Requires...". This is a warning telling you that you subscribed to an output that depends on an input that was not defined.

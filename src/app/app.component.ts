@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { interval, Subject, of } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { U235AstroFlashArg, U235AstroClock, U235AstroObservatory, U235AstroTarget } from 'u235-astro';
+import { U235AstroFlashArg, U235AstroClock, U235AstroObservatory, U235AstroTarget, U235AstroSNR } from 'u235-astro';
 
 class MyTarget extends U235AstroTarget {
   azimuthChange = new Subject<U235AstroFlashArg>();
@@ -85,6 +85,8 @@ export class AppComponent implements OnInit {
   constructor() {}
 
   ngOnInit(): void {
+    this.testSNR();
+
     this.clock.date$ = interval(1000).pipe(map(() => new Date()));
     this.clock.init();
 
@@ -113,4 +115,33 @@ export class AppComponent implements OnInit {
       this.targets.push(targets);
     }
   }
+
+  testSNR() {
+    const snrModel = new U235AstroSNR();
+
+    // William Optics ZenithStar 71:
+    snrModel.aperture$ = of(71);
+    snrModel.focalLength$ = of(418);
+    snrModel.centralObstruction$ = of(0);
+    snrModel.totalReflectanceTransmittance$ = of(0.99);
+    // Atik 314E:
+    snrModel.pixelSize$ = of(4.65);
+    snrModel.readNoise$ = of(5.3);
+    snrModel.darkCurrent$ = of(0.1);
+    snrModel.quantumEfficiency$ = of(43);
+    // Bortle 5:
+    snrModel.skyBrightness$ = of(20.02);
+    // M81:
+    snrModel.surfaceBrightness$ = of(21.7);
+    // Exposure:
+    snrModel.fluxAttenuation$ = of(1);  // assume zenith and unity relative QE
+    snrModel.binning$ = of(1);
+    snrModel.exposure$ = of(90);
+    snrModel.init();
+
+    snrModel.signalToNoisePerSub$.subscribe(value => console.log(`SNR per sub: ${value}`));
+    // Output:
+    // SNR per sub: 1.3354560781189644
+}
+
 }

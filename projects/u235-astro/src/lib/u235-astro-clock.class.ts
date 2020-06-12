@@ -11,7 +11,7 @@ export class U235AstroClock {
   clockTick$: Observable<U235AstroClockTick>;
 
   constructor() {
-    const message = 'Please call init() before accessing calculated Observables';
+    const message = 'Please call init() before subscribing to outputs';
     this.clockTick$ = throwError(new Error(message));
   }
 
