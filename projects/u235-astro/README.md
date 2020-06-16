@@ -74,10 +74,24 @@ interface U235AstroFlashArg {
     backgroundColor?: string,
     transitionDuration?: string
 }
+
+// Your model should implement this interface when you want to
+// perform root finding (see bisectionMethod in U235AstroService)
+interface U235AstroRootHelper {
+    solveY(x: number): number;
+}
+
+// Emitted upon successful completion of the bisectionMethod
+interface U235AstroRootSolution {
+    xRoot: number,
+    yRoot: number,
+    iterations: number
+}
 ```
 
 ### Classes:
 ```javascript
+// Reactive:
 class U235AstroClock {
     // Inputs:
     date$: Observable<Date>;
@@ -87,6 +101,7 @@ class U235AstroClock {
     init();
 }
 
+// Reactive:
 class U235AstroObservatory {
     // Inputs:
     name$: Observable<string>;
@@ -101,6 +116,7 @@ class U235AstroObservatory {
     init();
 }
 
+// Reactive:
 class U235AstroTarget {
     // Inputs:
     name$: Observable<string>;
@@ -117,6 +133,7 @@ class U235AstroTarget {
     init();
 }
 
+// Reactive:
 class U235AstroSNR {
     // Inputs:
     fluxAttenuation$: Observable<number>;
@@ -150,6 +167,56 @@ class U235AstroSNR {
     init();
 }
 
+// Synchronous implementation of U235AstroSNR.
+// Use it to perform root finding (see U235AstroService.bisectionMethod).
+class U235AstroSyncSNR {
+    setFluxAttenuation(value: number);
+    setAperture(value: number);
+    setFocalLength(value: number);
+    setCentralObstruction(value: number);
+    setTotalReflectanceTransmittance(value: number);
+    setPixelSize(value: number);
+    setBinning(value: number);
+    setSurfaceBrightness(value: number);
+    setReadNoise(value: number);
+    setDarkCurrent(value: number);
+    setQuantumEfficiency(value: number);
+    setSkyBrightness(value: number);
+    setExposure(value: number);
+    setNumberOfSubs(value: number);
+
+    getFluxAttenuation(): number;
+    getAperture(): number;
+    getFocalLength(): number;
+    getCentralObstruction(): number;
+    getTotalReflectanceTransmittance(): number;
+    getPixelSize(): number;
+    getBinning(): number;
+    getSurfaceBrightness(): number;
+    getReadNoise(): number;
+    getDarkCurrent(): number;
+    getQuantumEfficiency(): number;
+    getSkyBrightness(): number;
+    getExposure(): number;
+    getNumberOfSubs(): number;
+
+    getClearApertureEquivalent(): number;
+    getImageResolution(): number;
+    getPixelSurface(): number;
+    getTargetElectronsPerSecond(): number;
+    getTargetElectronsPerSub(): number;
+    getShotNoise(): number;
+    getSkyElectronsPerSecond(): number;
+    getSkyElectronsPerSub(): number;
+    getSkyNoise(): number;
+    getDarkSignalPerSub(): number;
+    getDarkNoise(): number;
+    getTotalNoisePerSub(): number;
+    getSignalToNoisePerSub(): number;
+    getTotalSignalToNoiseOfStack(): number;
+    getTotalIntegrationTime(): number;
+}
+
 // Used internally but you can use them too:
 class U235AstroVector3D;
 class U235AstroMatrix3D;
@@ -171,12 +238,22 @@ class U235AstroService {
     decodeAngleFromStorage(enc: number): number[];
     colorFluxAttenuation([colorBalance, extinction]: number[]): number;
     luminanceFluxAttenuation([redFluxAttenuation, greenFluxAttenuation, blueFluxAttenuation]: number[]): number;
+
+    // Bisection Method for root finding:
+    bisectionMethod(
+        maxIterations: number,
+        xTolerance: number,
+        yTarget: number,
+        xGuess1: number,
+        xGuess2: number,
+        helper: U235AstroRootHelper
+    ): U235AstroRootSolution;
 }
 ```
 
 ### Code Samples:
 
-Sample Implementation #1
+### Sample 1: Calculate the altitude and azimuth of the star Vega as seen from New York City at this very moment
 ```javascript
 import { interval, of } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -194,7 +271,7 @@ observatory.connect(clock);
 observatory.init();
 
 const target = new U235AstroTarget();
-// The star Vega:
+// Vega:
 target.equ2000$ = of({
     rightAscension: 18.61556,
     declination: 38.78361
@@ -216,7 +293,7 @@ target.horNow$.subscribe(value => {
 * Notice how inputs are defined before calling connect() or init().
 * Tip: Open up the developer's console of your browser while developing code. Look for messages like 'Requires...". This is a warning telling you that you subscribed to an output that depends on an input that was not defined.
 
-Sample Implementation #2
+### Sample 2: Calculate the signal-to-noise ratio of the galaxy M81 under Bortle 5 skies using an Atik 314E CCD and William Optics ZenithStar 71, using a 90-second exposure
 ```javascript
 import { of } from 'rxjs';
 import { U235AstroSNR } from 'u235-astro';
@@ -246,6 +323,44 @@ snrModel.init();
 snrModel.signalToNoisePerSub$.subscribe(value => console.log(`SNR per sub: ${value}`));
 // Output:
 // SNR per sub: 1.3354560781189644
+```
+
+### Sample 3: Calculate the square root of 2 using the Bisection Method
+```javascript
+import { U235AstroRootHelper, U235AstroService } from 'u235-astro';
+
+// Inject U235AstroService into your app component:
+constructor(private utility: U235AstroService) {}
+
+class SquareRoot implements U235AstroRootHelper {
+    squareRootOf: number;
+    constructor(squareRootOf: number) { this.squareRootOf = squareRootOf; }
+    solveY(x: number): number {
+        return x*x - this.squareRootOf;
+    }
+}
+
+const squareRootOf = 2;
+const helper = new SquareRoot(squareRootOf);
+const maxIterations = 20;
+const xTolerance = 0.0001;
+const yTarget = 0;
+const xGuess1 = 1;
+const xGuess2 = 2;
+
+try {
+    const answer = this.utility.bisectionMethod(maxIterations, xTolerance, yTarget, xGuess1, xGuess2, helper);
+    console.log(`Square root of ${squareRootOf} is ${answer.xRoot.toFixed(3)} after ${answer.iterations} iterations.`);
+}
+catch(e) {
+    // Possibility of two errors:
+    //  'U235AstroService.bisectionMethod Error: supplied endpoints do not bracket the solution.'
+    //  'U235AstroService.bisectionMethod Error: could not find solution after <maxIterations> iterations.'
+    console.error('Error', e.message);
+}
+
+// Output:
+// Square root of 2 is 1.414 after 14 iterations.
 ```
 
 ## Component Details

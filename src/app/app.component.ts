@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { interval, Subject, of } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { U235AstroFlashArg, U235AstroClock, U235AstroObservatory, U235AstroTarget, U235AstroSNR } from 'u235-astro';
+import { U235AstroFlashArg, U235AstroClock, U235AstroObservatory, U235AstroTarget, U235AstroSNR, U235AstroRootHelper, U235AstroService, U235AstroSyncSNR } from 'u235-astro';
 
 class MyTarget extends U235AstroTarget {
   azimuthChange = new Subject<U235AstroFlashArg>();
@@ -82,11 +82,9 @@ export class AppComponent implements OnInit {
   observatories: U235AstroObservatory[] = [];
   targets: MyTarget[][] = [];
 
-  constructor() {}
+  constructor(private utility: U235AstroService) {}
 
   ngOnInit(): void {
-    this.testSNR();
-
     this.clock.date$ = interval(1000).pipe(map(() => new Date()));
     this.clock.init();
 
@@ -114,6 +112,10 @@ export class AppComponent implements OnInit {
 
       this.targets.push(targets);
     }
+
+    this.testSNR();
+    this.testRoot1();
+    this.testRoot2();
   }
 
   testSNR() {
@@ -134,14 +136,96 @@ export class AppComponent implements OnInit {
     // M81:
     snrModel.surfaceBrightness$ = of(21.7);
     // Exposure:
-    snrModel.fluxAttenuation$ = of(1);  // assume zenith and unity relative QE
+    snrModel.fluxAttenuation$ = of(1);
     snrModel.binning$ = of(1);
     snrModel.exposure$ = of(90);
     snrModel.init();
 
-    snrModel.signalToNoisePerSub$.subscribe(value => console.log(`SNR per sub: ${value}`));
-    // Output:
-    // SNR per sub: 1.3354560781189644
-}
+    snrModel.signalToNoisePerSub$.subscribe(value => console.log(`signalToNoisePerSub: ${value}`));
+    snrModel.targetElectronsPerSub$.subscribe(value => console.log(`targetElectronsPerSub: ${value}`));
+  }
+
+  testRoot1() {
+
+    class SquareRoot implements U235AstroRootHelper {
+      squareRootOf: number;
+      constructor(squareRootOf: number) { this.squareRootOf = squareRootOf; }
+      solveY(x: number): number {
+        return x*x - this.squareRootOf;
+      }
+    }
+
+    const squareRootOf = 2;
+    const helper = new SquareRoot(squareRootOf);
+    const maxIterations = 100;
+    const xTolerance = 0.0001;
+    const yTarget = 0;
+    const xGuess1 = 1;
+    const xGuess2 = 2;
+
+    try {
+      const answer = this.utility.bisectionMethod(maxIterations, xTolerance, yTarget, xGuess1, xGuess2, helper);
+      console.log(`Square root of ${squareRootOf} is ${answer.xRoot.toFixed(3)} after ${answer.iterations} iterations.`);
+    }
+    catch(e) {
+      console.error('Error', e.message);
+    }
+
+  }
+
+  testRoot2() {
+
+    class Helper implements U235AstroRootHelper {
+      model: U235AstroSyncSNR;
+
+      constructor(model: U235AstroSyncSNR) {
+        this.model = model;
+      }
+
+      solveY(x: number): number {
+        this.model.setNumberOfSubs(x);
+        return this.model.getTotalSignalToNoiseOfStack();
+      }
+    }
+
+    const model = new U235AstroSyncSNR();
+    // William Optics ZenithStar 71:
+    model.setAperture(71);
+    model.setFocalLength(418);
+    model.setCentralObstruction(0);
+    model.setTotalReflectanceTransmittance(0.99);
+    // Atik 314E:
+    model.setPixelSize(4.65);
+    model.setReadNoise(5.3);
+    model.setDarkCurrent(0.1);
+    model.setQuantumEfficiency(43);
+    // Bortle 5:
+    model.setSkyBrightness(20.02);
+    // M81:
+    model.setSurfaceBrightness(21.7);
+    // Exposure:
+    model.setFluxAttenuation(1);
+    model.setBinning(1);
+    model.setExposure(90);
+
+    const helper = new Helper(model);
+
+    const maxIterations = 100;
+    const xTolerance = 0.001;
+    const yTarget = 25;     // Target SNR
+    const xGuess1 = 1;      // Number of subs bracket guess 1
+    const xGuess2 = 40000;  // Number of subs bracket guess 2
+    // Perhaps a good value of xGuess2 is to assume that no one will be willing to spend 1000 hours, so xGuess2 = 1000 * 3600 / exposure
+
+    try {
+      const answer = this.utility.bisectionMethod(maxIterations, xTolerance, yTarget, xGuess1, xGuess2, helper);
+      console.log(`Solved after ${answer.iterations} iterations:`);
+      console.log(`Total Integration Time of ${model.getTotalIntegrationTime().toFixed(2)} hours needed to achieve SNR ${model.getTotalSignalToNoiseOfStack().toFixed(1)}.`);
+    }
+    catch(e) {
+      console.error('Error', e.message);
+    }
+
+  }
 
 }

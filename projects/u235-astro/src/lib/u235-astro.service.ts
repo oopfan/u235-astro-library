@@ -1,11 +1,60 @@
 import { Injectable } from '@angular/core';
+import { U235AstroRootHelper, U235AstroRootSolution } from './u235-astro.interfaces';
 
 @Injectable({
   providedIn: 'root'
 })
 export class U235AstroService {
 
-  constructor() { }
+  constructor() {}
+
+  bisectionMethod(
+    maxIterations: number,
+    xTolerance: number,
+    yTarget: number,
+    xGuess1: number,
+    xGuess2: number,
+    helper: U235AstroRootHelper
+  ): U235AstroRootSolution {
+
+    const yGuess1 = helper.solveY(xGuess1);
+    const yGuess2 = helper.solveY(xGuess2);
+    const yError1 = yGuess1 - yTarget;
+    const yError2 = yGuess2 - yTarget;
+    if (Math.sign(yError1) == Math.sign(yError2)) {
+      throw new Error('U235AstroService.bisectionMethod Error: supplied endpoints do not bracket the solution.');
+    }
+    return this._bisectionMethod(maxIterations, 1, xTolerance, yTarget, xGuess1, xGuess2, yError1, helper);
+  }
+
+  private _bisectionMethod(
+    maxIterations: number,
+    currIteration: number,
+    xTolerance: number,
+    yTarget: number,
+    xGuess1: number,
+    xGuess2: number,
+    yError1: number,
+    helper: U235AstroRootHelper
+  ): U235AstroRootSolution {
+
+    const xMidpoint = (xGuess1 + xGuess2) / 2;
+    const yMidpoint = helper.solveY(xMidpoint);
+    const yError = yMidpoint - yTarget;
+    if (yError == 0 || (xGuess2 - xGuess1) / 2 < xTolerance) {
+      return { xRoot: xMidpoint, yRoot: yMidpoint, iterations: currIteration };
+    }
+    if (currIteration >= maxIterations) {
+      throw new Error(`U235AstroService.bisectionMethod Error: could not find solution after ${maxIterations} iterations.`);
+    }
+    if (Math.sign(yError) == Math.sign(yError1)) {
+      xGuess1 = xMidpoint;
+    }
+    else {
+      xGuess2 = xMidpoint;
+    }
+    return this._bisectionMethod(maxIterations, currIteration+1, xTolerance, yTarget, xGuess1, xGuess2, yError1, helper);
+  }
 
   colorFluxAttenuation([colorBalance, extinction]: number[]): number {
     return 1 / 3 / colorBalance / extinction;

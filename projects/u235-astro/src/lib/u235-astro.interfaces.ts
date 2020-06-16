@@ -28,3 +28,13 @@ export interface U235AstroHorizontalCoordinates {
     azimuth: number;
     altitude: number;
 }
+
+export interface U235AstroRootHelper {
+    solveY(x: number): number;
+}
+
+export interface U235AstroRootSolution {
+    xRoot: number,
+    yRoot: number,
+    iterations: number
+}
