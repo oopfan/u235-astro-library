@@ -116,6 +116,7 @@ export class AppComponent implements OnInit {
     this.testSNR();
     this.testRoot1();
     this.testRoot2();
+    this.testDate();
   }
 
   testSNR() {
@@ -226,6 +227,18 @@ export class AppComponent implements OnInit {
       console.error('Error', e.message);
     }
 
+  }
+
+  testDate() {
+    const date1 = new Date();
+    const dayFrac = U235AstroClock.calculateDayFraction(date1);
+    const jd0 = U235AstroClock.calculateJD0FromDate(date1);
+    const jd = U235AstroClock.calculateJD(dayFrac, jd0);
+    const date2 = U235AstroClock.calculateDate(jd);
+
+    console.log('date1:', date1.toUTCString());
+    console.log('jd:   ', jd);
+    console.log('date2:', date2.toUTCString());
   }
 
 }
