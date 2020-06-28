@@ -3,7 +3,7 @@ import { interval, Subject, of } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import {
   U235AstroFlashArg, U235AstroClock, U235AstroObservatory, U235AstroTarget, U235AstroSNR,
-  U235AstroRootHelper, U235AstroService, U235AstroSyncSNR, U235AstroReactiveSolarSystem
+  U235AstroRootHelper, U235AstroService, U235AstroSyncSNR, U235AstroReactiveSolarSystem, U235AstroReactiveSchlyterMoon
 } from 'u235-astro';
 
 class MyTarget extends U235AstroTarget {
@@ -85,6 +85,7 @@ export class AppComponent implements OnInit {
   observatories: U235AstroObservatory[] = [];
   targets: MyTarget[][] = [];
   solarSystem = new U235AstroReactiveSolarSystem();
+  moon = new U235AstroReactiveSchlyterMoon();
 
   constructor(private utility: U235AstroService) {}
 
@@ -93,6 +94,8 @@ export class AppComponent implements OnInit {
     this.clock.init();
     this.solarSystem.connect(this.clock);
     this.solarSystem.init();
+    this.moon.connect(this.clock);
+    this.moon.init();
 
     for (let site of this.sites) {
       const observatory = new U235AstroObservatory();
@@ -115,6 +118,13 @@ export class AppComponent implements OnInit {
         target.init();
         targets.push(target);
       }
+
+      const moonTarget = new MyTarget();
+      moonTarget.name$ = of('Moon');
+      moonTarget.equ2000$ = this.moon.equ2000$;
+      moonTarget.connect(observatory);
+      moonTarget.init();
+      targets.push(moonTarget);
 
       const bodies = [
         { name: 'Sun', measure: 'sunEqu2000$' },

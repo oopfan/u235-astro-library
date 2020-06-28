@@ -43,6 +43,8 @@ export class U235AstroClock {
         matEclToEqu.setRotateX(-obliquityOfEcliptic / 180 * Math.PI);
         const matPrecessToDate = new U235AstroMatrix3D();
         matPrecessToDate.setRotateZ(-precessionSinceJ2000 / 180 * Math.PI);
+        const matPrecessFromDate = new U235AstroMatrix3D();
+        matPrecessFromDate.setRotateZ(precessionSinceJ2000 / 180 * Math.PI);
         this.earthOrbit.setJulianDate(jd);
         const earthHelEcl2000 = this.earthOrbit.getEclipticPosition();
         return {
@@ -57,6 +59,7 @@ export class U235AstroClock {
           matEquToEcl,
           matEclToEqu,
           matPrecessToDate,
+          matPrecessFromDate,
           earthHelEcl2000
         };
       }));

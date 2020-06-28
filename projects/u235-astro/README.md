@@ -2,6 +2,10 @@
 
 > This Angular library contains a collection of components, directives and classes that are useful for creating Astronomy applications.
 
+> Note: All coordinates, including Altitude and Azimuth, are Geocentric. At this time no
+corrections are made for Horizontal Parallax or Atmospheric Refraction. This will change
+in future versions.
+
 ## How to use?
 ```javascript
 import { U235AstroModule } from 'u235-astro';

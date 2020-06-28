@@ -18,6 +18,7 @@ export interface U235AstroClockTick {
     matEquToEcl: U235AstroMatrix3D;
     matEclToEqu: U235AstroMatrix3D;
     matPrecessToDate: U235AstroMatrix3D;
+    matPrecessFromDate: U235AstroMatrix3D;
     earthHelEcl2000: U235AstroVector3D;
 }
 
