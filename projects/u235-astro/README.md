@@ -58,7 +58,8 @@ interface U235AstroClockTick {
     precessionSinceJ2000: number,   // Precession in degrees
     matEquToEcl: U235AstroMatrix3D, // Transform Equ to Ecl coords.
     matEclToEqu: U235AstroMatrix3D, // Transform Ecl to Equ coords.
-    matPrecessToDate: U235AstroMatrix3D, // Precession Transform
+    matPrecessToDate: U235AstroMatrix3D, // Precess from J2000 to Date
+    matPrecessFromDate: U235AstroMatrix3D;  // Precess from Date to J2000
     earthHelEcl2000: U235AstroVector3D   // Heliocentric Ecliptic Earth
 }
 
@@ -152,6 +153,17 @@ class U235AstroReactiveSolarSystem {
     uranusEqu2000$: Observable<U235AstroEquatorialCoordinates>;
     neptuneEqu2000$: Observable<U235AstroEquatorialCoordinates>;
     plutoEqu2000$: Observable<U235AstroEquatorialCoordinates>;
+    // Methods:
+    connect(clock: U235AstroClock);
+    init();
+}
+
+// Reactive:
+class U235AstroReactiveSchlyterMoon {
+    // Inputs:
+    clockTick$: Observable<U235AstroClockTick>;
+    // Outputs:
+    equ2000$: Observable<U235AstroEquatorialCoordinates>;
     // Methods:
     connect(clock: U235AstroClock);
     init();
