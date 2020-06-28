@@ -27,8 +27,8 @@
                 <th>Target</th>
                 <th>RA (J2000)</th>
                 <th>DEC (J2000)</th>
-                <th>RA (Now)</th>
-                <th>DEC (Now)</th>
+                <!-- <th>RA (Now)</th>
+                <th>DEC (Now)</th> -->
                 <th>Azimuth</th>
                 <th>Altitude</th>
                 <th>Hour Angle</th>
@@ -40,10 +40,10 @@
                         <td><u235-astro-right-ascension [hours]="equ2000.rightAscension"></u235-astro-right-ascension></td>
                         <td><u235-astro-declination [degrees]="equ2000.declination"></u235-astro-declination></td>
                     </ng-container>
-                    <ng-container *ngIf="target.equNow$ | async as equNow">
+                    <!-- <ng-container *ngIf="target.equNow$ | async as equNow">
                         <td><u235-astro-right-ascension [hours]="equNow.rightAscension"></u235-astro-right-ascension></td>
                         <td><u235-astro-declination [degrees]="equNow.declination"></u235-astro-declination></td>
-                    </ng-container>
+                    </ng-container> -->
                     <ng-container *ngIf="target.horNow$ | async as horNow">
                         <td><u235-astro-azimuth [degrees]="horNow.azimuth" (notifyChange)="target.onAzimuthChange()" [u235-astro-flash]="target.azimuthChange.asObservable()"></u235-astro-azimuth></td>
                         <td><u235-astro-altitude [degrees]="horNow.altitude" (notifyChange)="target.onAltitudeChange()" [u235-astro-flash]="target.altitudeChange.asObservable()"></u235-astro-altitude></td>

@@ -54,7 +54,8 @@ interface U235AstroClockTick {
     precessionSinceJ2000: number,   // Precession in degrees
     matEquToEcl: U235AstroMatrix3D, // Transform Equ to Ecl coords.
     matEclToEqu: U235AstroMatrix3D, // Transform Ecl to Equ coords.
-    matPrecessToDate: U235AstroMatrix3D // Precession Transform
+    matPrecessToDate: U235AstroMatrix3D, // Precession Transform
+    earthHelEcl2000: U235AstroVector3D   // Heliocentric Ecliptic Earth
 }
 
 // Emitted by equ2000$ and equNow$ Observables of U235AstroTarget  
@@ -130,6 +131,25 @@ class U235AstroTarget {
     hourAngle$: Observable<number>;
     // Methods:
     connect(observatory: U235AstroObservatory);
+    init();
+}
+
+// Reactive:
+class U235AstroReactiveSolarSystem {
+    // Inputs:
+    clockTick$: Observable<U235AstroClockTick>;
+    // Outputs:
+    sunEqu2000$: Observable<U235AstroEquatorialCoordinates>;
+    mercuryEqu2000$: Observable<U235AstroEquatorialCoordinates>;
+    venusEqu2000$: Observable<U235AstroEquatorialCoordinates>;
+    marsEqu2000$: Observable<U235AstroEquatorialCoordinates>;
+    jupiterEqu2000$: Observable<U235AstroEquatorialCoordinates>;
+    saturnEqu2000$: Observable<U235AstroEquatorialCoordinates>;
+    uranusEqu2000$: Observable<U235AstroEquatorialCoordinates>;
+    neptuneEqu2000$: Observable<U235AstroEquatorialCoordinates>;
+    plutoEqu2000$: Observable<U235AstroEquatorialCoordinates>;
+    // Methods:
+    connect(clock: U235AstroClock);
     init();
 }
 

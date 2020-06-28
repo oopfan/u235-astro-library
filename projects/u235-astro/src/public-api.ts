@@ -6,10 +6,12 @@ export * from './lib/u235-astro.service';
 export * from './lib/u235-astro.interfaces';
 export * from './lib/u235-astro-flash.directive';
 
-export * from './lib/u235-astro-snr.class';
 export * from './lib/u235-astro-clock.class';
+export * from './lib/u235-astro-elliptical-orbit.class';
 export * from './lib/u235-astro-matrix3d.class';
 export * from './lib/u235-astro-observatory.class';
+export * from './lib/u235-astro-solar-system.class';
+export * from './lib/u235-astro-snr.class';
 export * from './lib/u235-astro-target.class';
 export * from './lib/u235-astro-vector3d.class';
 

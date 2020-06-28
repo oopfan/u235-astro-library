@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { interval, Subject, of } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { U235AstroFlashArg, U235AstroClock, U235AstroObservatory, U235AstroTarget, U235AstroSNR, U235AstroRootHelper, U235AstroService, U235AstroSyncSNR } from 'u235-astro';
+import { map, startWith } from 'rxjs/operators';
+import {
+  U235AstroFlashArg, U235AstroClock, U235AstroObservatory, U235AstroTarget, U235AstroSNR,
+  U235AstroRootHelper, U235AstroService, U235AstroSyncSNR, U235AstroReactiveSolarSystem
+} from 'u235-astro';
 
 class MyTarget extends U235AstroTarget {
   azimuthChange = new Subject<U235AstroFlashArg>();
@@ -14,7 +17,7 @@ class MyTarget extends U235AstroTarget {
 
   onAzimuthChange() {
     this.azimuthChange.next({});
-}
+  }
 
   onAltitudeChange() {
     this.altitudeChange.next({});
@@ -56,37 +59,40 @@ export class AppComponent implements OnInit {
       ra2000: this.encode(2, 31, 54),
       de2000: this.encode(89, 15, 51)
     },
-    {
-      name: 'Vega',
-      ra2000: this.encode(18, 36, 56),
-      de2000: this.encode(38, 47, 1)
-    },
-    {
-      name: 'M13',
-      ra2000: this.encode(16, 41, 42),
-      de2000: this.encode(36, 27, 39)
-    },
-    {
-      name: 'M27',
-      ra2000: this.encode(19, 59, 36),
-      de2000: this.encode(22, 43, 18)
-    },
-    {
-      name: 'M57',
-      ra2000: this.encode(18, 53, 35),
-      de2000: this.encode(33, 1, 47)
-    }
+    // {
+    //   name: 'Vega',
+    //   ra2000: this.encode(18, 36, 56),
+    //   de2000: this.encode(38, 47, 1)
+    // },
+    // {
+    //   name: 'M13',
+    //   ra2000: this.encode(16, 41, 42),
+    //   de2000: this.encode(36, 27, 39)
+    // },
+    // {
+    //   name: 'M27',
+    //   ra2000: this.encode(19, 59, 36),
+    //   de2000: this.encode(22, 43, 18)
+    // },
+    // {
+    //   name: 'M57',
+    //   ra2000: this.encode(18, 53, 35),
+    //   de2000: this.encode(33, 1, 47)
+    // }
   ]
 
   clock = new U235AstroClock();
   observatories: U235AstroObservatory[] = [];
   targets: MyTarget[][] = [];
+  solarSystem = new U235AstroReactiveSolarSystem();
 
   constructor(private utility: U235AstroService) {}
 
   ngOnInit(): void {
-    this.clock.date$ = interval(1000).pipe(map(() => new Date()));
+    this.clock.date$ = interval(1000).pipe(startWith(0), map(() => new Date()));
     this.clock.init();
+    this.solarSystem.connect(this.clock);
+    this.solarSystem.init();
 
     for (let site of this.sites) {
       const observatory = new U235AstroObservatory();
@@ -110,13 +116,32 @@ export class AppComponent implements OnInit {
         targets.push(target);
       }
 
+      const bodies = [
+        { name: 'Sun', measure: 'sunEqu2000$' },
+        { name: 'Mercury', measure: 'mercuryEqu2000$' },
+        { name: 'Venus', measure: 'venusEqu2000$' },
+        { name: 'Mars', measure: 'marsEqu2000$' },
+        { name: 'Jupiter', measure: 'jupiterEqu2000$' },
+        { name: 'Saturn', measure: 'saturnEqu2000$' },
+        { name: 'Uranus', measure: 'uranusEqu2000$' },
+        { name: 'Neptune', measure: 'neptuneEqu2000$' },
+        { name: 'Pluto', measure: 'plutoEqu2000$' },
+      ];
+      for (let body of bodies) {
+        const target = new MyTarget();
+        target.name$ = of(body.name);
+        target.equ2000$ = this.solarSystem[body.measure];
+        target.connect(observatory);
+        target.init();
+        targets.push(target);
+      }
       this.targets.push(targets);
     }
 
-    this.testSNR();
-    this.testRoot1();
-    this.testRoot2();
-    this.testDate();
+    // this.testSNR();
+    // this.testRoot1();
+    // this.testRoot2();
+    // this.testDate();
   }
 
   testSNR() {
