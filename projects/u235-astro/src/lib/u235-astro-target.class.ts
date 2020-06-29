@@ -1,5 +1,5 @@
 import { Observable, throwError, combineLatest } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, publishReplay, refCount } from 'rxjs/operators';
 import { U235AstroClockTick, U235AstroEquatorialCoordinates, U235AstroHorizontalCoordinates } from './u235-astro.interfaces';
 import { U235AstroObservatory } from './u235-astro-observatory.class';
 import { U235AstroMatrix3D } from './u235-astro-matrix3d.class';
@@ -60,7 +60,9 @@ export class U235AstroTarget {
                         rightAscension: raNow / Math.PI * 12,
                         declination: deNow / Math.PI * 180
                     }
-                })
+                }),
+                publishReplay(1),
+                refCount()
             );
         }
 
@@ -87,7 +89,9 @@ export class U235AstroTarget {
                         azimuth: az / Math.PI * 180,
                         altitude: alt / Math.PI * 180
                     }
-                })
+                }),
+                publishReplay(1),
+                refCount()
             );
         }
 
@@ -108,7 +112,9 @@ export class U235AstroTarget {
                         ha += 24;
                     }
                     return ha;
-                })
+                }),
+                publishReplay(1),
+                refCount()
             );
         }
 

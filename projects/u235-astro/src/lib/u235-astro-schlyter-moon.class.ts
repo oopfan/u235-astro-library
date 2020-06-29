@@ -1,5 +1,5 @@
 import { Observable, throwError } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, publishReplay, refCount } from 'rxjs/operators';
 import { U235AstroClockTick, U235AstroEquatorialCoordinates } from './u235-astro.interfaces';
 import { U235AstroClock } from './u235-astro-clock.class';
 import { U235AstroVector3D } from './u235-astro-vector3d.class';
@@ -44,7 +44,9 @@ export class U235AstroReactiveSchlyterMoon {
                         rightAscension: phi / Math.PI * 12,
                         declination: theta / Math.PI * 180
                     }
-                })
+                }),
+                publishReplay(1),
+                refCount()
             );
         }
     }

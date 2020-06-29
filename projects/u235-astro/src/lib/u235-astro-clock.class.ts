@@ -1,5 +1,5 @@
 import { Observable, throwError } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, refCount, publishReplay } from 'rxjs/operators';
 import { U235AstroClockTick } from './u235-astro.interfaces';
 import { U235AstroMatrix3D } from './u235-astro-matrix3d.class';
 import { U235AstroEllipticalOrbit } from './u235-astro-elliptical-orbit.class';
@@ -29,40 +29,44 @@ export class U235AstroClock {
       this.clockTick$ = throwError(new Error(msg));
     }
     else {
-      this.clockTick$ = this.date$.pipe(map(date => {
-        const dayFraction = U235AstroClock.calculateDayFraction(date);
-        const jd0 = U235AstroClock.calculateJD0FromDate(date);
-        const jd = U235AstroClock.calculateJD(dayFraction, jd0);
-        const gmst0 = U235AstroClock.calculateGMST0(jd0);
-        const gmst = U235AstroClock.calculateGMST(dayFraction, gmst0);
-        const obliquityOfEcliptic = U235AstroClock.calculateObliquityOfEcliptic(jd);
-        const precessionSinceJ2000 = U235AstroClock.calculatePrecessionSinceJ2000(jd);
-        const matEquToEcl = new U235AstroMatrix3D();
-        matEquToEcl.setRotateX(obliquityOfEcliptic / 180 * Math.PI);
-        const matEclToEqu = new U235AstroMatrix3D();
-        matEclToEqu.setRotateX(-obliquityOfEcliptic / 180 * Math.PI);
-        const matPrecessToDate = new U235AstroMatrix3D();
-        matPrecessToDate.setRotateZ(-precessionSinceJ2000 / 180 * Math.PI);
-        const matPrecessFromDate = new U235AstroMatrix3D();
-        matPrecessFromDate.setRotateZ(precessionSinceJ2000 / 180 * Math.PI);
-        this.earthOrbit.setJulianDate(jd);
-        const earthHelEcl2000 = this.earthOrbit.getEclipticPosition();
-        return {
-          date,
-          dayFraction,
-          jd0,
-          jd,
-          gmst0,
-          gmst,
-          obliquityOfEcliptic,
-          precessionSinceJ2000,
-          matEquToEcl,
-          matEclToEqu,
-          matPrecessToDate,
-          matPrecessFromDate,
-          earthHelEcl2000
-        };
-      }));
+      this.clockTick$ = this.date$.pipe(
+        map(date => {
+          const dayFraction = U235AstroClock.calculateDayFraction(date);
+          const jd0 = U235AstroClock.calculateJD0FromDate(date);
+          const jd = U235AstroClock.calculateJD(dayFraction, jd0);
+          const gmst0 = U235AstroClock.calculateGMST0(jd0);
+          const gmst = U235AstroClock.calculateGMST(dayFraction, gmst0);
+          const obliquityOfEcliptic = U235AstroClock.calculateObliquityOfEcliptic(jd);
+          const precessionSinceJ2000 = U235AstroClock.calculatePrecessionSinceJ2000(jd);
+          const matEquToEcl = new U235AstroMatrix3D();
+          matEquToEcl.setRotateX(obliquityOfEcliptic / 180 * Math.PI);
+          const matEclToEqu = new U235AstroMatrix3D();
+          matEclToEqu.setRotateX(-obliquityOfEcliptic / 180 * Math.PI);
+          const matPrecessToDate = new U235AstroMatrix3D();
+          matPrecessToDate.setRotateZ(-precessionSinceJ2000 / 180 * Math.PI);
+          const matPrecessFromDate = new U235AstroMatrix3D();
+          matPrecessFromDate.setRotateZ(precessionSinceJ2000 / 180 * Math.PI);
+          this.earthOrbit.setJulianDate(jd);
+          const earthHelEcl2000 = this.earthOrbit.getEclipticPosition();
+          return {
+            date,
+            dayFraction,
+            jd0,
+            jd,
+            gmst0,
+            gmst,
+            obliquityOfEcliptic,
+            precessionSinceJ2000,
+            matEquToEcl,
+            matEclToEqu,
+            matPrecessToDate,
+            matPrecessFromDate,
+            earthHelEcl2000
+          };
+        }),
+        publishReplay(1),
+        refCount()
+      );
     }
   }
 

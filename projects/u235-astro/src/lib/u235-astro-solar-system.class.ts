@@ -1,5 +1,5 @@
 import { Observable, throwError } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, publishReplay, refCount } from 'rxjs/operators';
 import { U235AstroEllipticalOrbit } from './u235-astro-elliptical-orbit.class';
 import { U235AstroVector3D } from './u235-astro-vector3d.class';
 import { U235AstroClockTick, U235AstroEquatorialCoordinates } from './u235-astro.interfaces';
@@ -71,7 +71,9 @@ export class U235AstroReactiveSolarSystem {
                     this.mercuryOrbit.setJulianDate(clockTick.jd);
                     const mercuryHelEcl2000 = this.mercuryOrbit.getEclipticPosition();
                     return U235AstroReactiveSolarSystem.transformCoordinates(mercuryHelEcl2000, clockTick.earthHelEcl2000, clockTick.matEclToEqu);
-                })
+                }),
+                publishReplay(1),
+                refCount()
             );
         }
 
@@ -84,7 +86,9 @@ export class U235AstroReactiveSolarSystem {
                     this.venusOrbit.setJulianDate(clockTick.jd);
                     const venusHelEcl2000 = this.venusOrbit.getEclipticPosition();
                     return U235AstroReactiveSolarSystem.transformCoordinates(venusHelEcl2000, clockTick.earthHelEcl2000, clockTick.matEclToEqu);
-                })
+                }),
+                publishReplay(1),
+                refCount()
             );
         }
 
@@ -99,7 +103,9 @@ export class U235AstroReactiveSolarSystem {
                     sunHelEcl2000.setElement(2, 0);
                     sunHelEcl2000.setElement(3, 0);
                     return U235AstroReactiveSolarSystem.transformCoordinates(sunHelEcl2000, clockTick.earthHelEcl2000, clockTick.matEclToEqu);
-                })
+                }),
+                publishReplay(1),
+                refCount()
             );
         }
 
@@ -112,7 +118,9 @@ export class U235AstroReactiveSolarSystem {
                     this.marsOrbit.setJulianDate(clockTick.jd);
                     const marsHelEcl2000 = this.marsOrbit.getEclipticPosition();
                     return U235AstroReactiveSolarSystem.transformCoordinates(marsHelEcl2000, clockTick.earthHelEcl2000, clockTick.matEclToEqu);
-                })
+                }),
+                publishReplay(1),
+                refCount()
             );
         }
 
@@ -125,7 +133,9 @@ export class U235AstroReactiveSolarSystem {
                     this.jupiterOrbit.setJulianDate(clockTick.jd);
                     const jupiterHelEcl2000 = this.jupiterOrbit.getEclipticPosition();
                     return U235AstroReactiveSolarSystem.transformCoordinates(jupiterHelEcl2000, clockTick.earthHelEcl2000, clockTick.matEclToEqu);
-                })
+                }),
+                publishReplay(1),
+                refCount()
             );
         }
 
@@ -138,7 +148,9 @@ export class U235AstroReactiveSolarSystem {
                     this.saturnOrbit.setJulianDate(clockTick.jd);
                     const saturnHelEcl2000 = this.saturnOrbit.getEclipticPosition();
                     return U235AstroReactiveSolarSystem.transformCoordinates(saturnHelEcl2000, clockTick.earthHelEcl2000, clockTick.matEclToEqu);
-                })
+                }),
+                publishReplay(1),
+                refCount()
             );
         }
 
@@ -151,7 +163,9 @@ export class U235AstroReactiveSolarSystem {
                     this.uranusOrbit.setJulianDate(clockTick.jd);
                     const uranusHelEcl2000 = this.uranusOrbit.getEclipticPosition();
                     return U235AstroReactiveSolarSystem.transformCoordinates(uranusHelEcl2000, clockTick.earthHelEcl2000, clockTick.matEclToEqu);
-                })
+                }),
+                publishReplay(1),
+                refCount()
             );
         }
 
@@ -164,7 +178,9 @@ export class U235AstroReactiveSolarSystem {
                     this.neptuneOrbit.setJulianDate(clockTick.jd);
                     const neptuneHelEcl2000 = this.neptuneOrbit.getEclipticPosition();
                     return U235AstroReactiveSolarSystem.transformCoordinates(neptuneHelEcl2000, clockTick.earthHelEcl2000, clockTick.matEclToEqu);
-                })
+                }),
+                publishReplay(1),
+                refCount()
             );
         }
 
@@ -177,7 +193,9 @@ export class U235AstroReactiveSolarSystem {
                     this.plutoOrbit.setJulianDate(clockTick.jd);
                     const plutoHelEcl2000 = this.plutoOrbit.getEclipticPosition();
                     return U235AstroReactiveSolarSystem.transformCoordinates(plutoHelEcl2000, clockTick.earthHelEcl2000, clockTick.matEclToEqu);
-                })
+                }),
+                publishReplay(1),
+                refCount()
             );
         }
 

@@ -1,5 +1,5 @@
 import { Observable, throwError, combineLatest } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, publishReplay, refCount } from 'rxjs/operators';
 import { U235AstroClockTick } from './u235-astro.interfaces';
 import { U235AstroClock } from './u235-astro-clock.class';
 import { U235AstroMatrix3D } from './u235-astro-matrix3d.class';
@@ -43,7 +43,9 @@ export class U235AstroObservatory {
               lmst -= 24;
           }
           return lmst;
-        })
+        }),
+        publishReplay(1),
+        refCount()
       );
     }
 
@@ -63,7 +65,9 @@ export class U235AstroObservatory {
           const mat = new U235AstroMatrix3D();
           mat.matrixMultiply(rotY).matrixMultiply(rotZ);
           return mat;
-        })
+        }),
+        publishReplay(1),
+        refCount()
       );
     }
 
