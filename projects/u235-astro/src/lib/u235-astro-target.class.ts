@@ -58,7 +58,8 @@ export class U235AstroTarget {
                     const deNow = result[1];
                     return {
                         rightAscension: raNow / Math.PI * 12,
-                        declination: deNow / Math.PI * 180
+                        declination: deNow / Math.PI * 180,
+                        distance: equ2000.distance
                     }
                 }),
                 publishReplay(1),
@@ -79,9 +80,16 @@ export class U235AstroTarget {
                     vec.setPolar(
                         equNow.rightAscension / 12 * Math.PI,
                         equNow.declination / 180 * Math.PI,
-                        1
+                        equNow.distance === undefined ? 1000: equNow.distance
                     );
                     vec.matrixMultiply(matEquToHor);
+                    // Adjust for Horizontal Parallax...
+                    // 'vec' is horizontal coordinates relative to the Earth's center,
+                    // The z-coordinate is up/down from the observer's perspective,
+                    // Subtract the radius of the Earth from 'z',
+                    // thus placing the origin at the observer on the Earth's surface:
+                    // 'z' is in Astronomical Units (AU),
+                    vec.setElement(3, vec.getElement(3) - 3958.8 / 92955810.0);
                     const result = vec.getPolar();
                     const az = Math.PI - result[0];
                     const alt = result[1];

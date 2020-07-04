@@ -1,10 +1,13 @@
 # u235-astro
 
-> This Angular library contains a collection of components, directives and classes that are useful for creating Astronomy applications.
+> This Angular library contains a collection of components, directives and classes that are
+useful for creating Astronomy applications.
 
-> Note: All coordinates, including Altitude and Azimuth, are Geocentric. At this time no
-corrections are made for Horizontal Parallax or Atmospheric Refraction. This will change
-in future versions.
+> Note: Version 0.0.9 and earlier, Altitude and Azimuth were calculated relative to the
+Earth's center. Now beginning with version 0.0.10 Altitude and Azimuth are relative to the
+Observatory's location on the Earth's surface. All other coordinates including Right Ascension
+and Declination remain relative to the Earth's center. This change mostly affected the position
+of the Moon.
 
 ## How to use?
 ```javascript
@@ -67,12 +70,17 @@ interface U235AstroClockTick {
 interface U235AstroEquatorialCoordinates {
     rightAscension: number;
     declination: number;
+    distance?: number;  // The distance to the target relative to the Earth's center
+                        // in Astronomical Units. It is calculated for the Sun, Moon,
+                        // and Planets, however if your application defines a target
+                        // like a star then leave it undefined. If this is not possible
+                        // then choose a number like 1000. Don't use Number.Infinity
 }
 
 // Emitted by horNow$ Observable of U235AstroTarget
 interface U235AstroHorizontalCoordinates {
     azimuth: number;
-    altitude: number;
+    altitude: number;   // These are Topocentric coordinates.
 }
 
 // Controls flash properties (see docs for u235-astro-flash)

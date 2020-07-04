@@ -10,7 +10,7 @@ If you wish you can clone this repo and run the web app locally:
 
 1. Clone the repo.
 1. At the terminal run **```npm install```**
-1. Then **```ng build u235-astro```**
+1. Then **```npm run ng build u235-astro```**
 1. Finally **```npm start```**
 1. Launch your browser and go to localhost:4200
 

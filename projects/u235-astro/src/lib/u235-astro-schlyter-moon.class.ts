@@ -39,10 +39,12 @@ export class U235AstroReactiveSchlyterMoon {
                         phi += 2 * Math.PI;
                     }
                     const theta = result[1];
+                    const radius = result[2];
             
                     return {
                         rightAscension: phi / Math.PI * 12,
-                        declination: theta / Math.PI * 180
+                        declination: theta / Math.PI * 180,
+                        distance: radius
                     }
                 }),
                 publishReplay(1),

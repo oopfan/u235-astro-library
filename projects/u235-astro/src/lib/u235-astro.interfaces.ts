@@ -25,6 +25,7 @@ export interface U235AstroClockTick {
 export interface U235AstroEquatorialCoordinates {
     rightAscension: number;
     declination: number;
+    distance?: number;
 }
 
 export interface U235AstroHorizontalCoordinates {
