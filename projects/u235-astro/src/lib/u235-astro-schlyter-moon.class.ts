@@ -10,11 +10,11 @@ export class U235AstroReactiveSchlyterMoon {
     clockTick$: Observable<U235AstroClockTick>;
 
     // Outputs:
-    equ2000$: Observable<U235AstroEquatorialCoordinates>;
+    geoEqu2000$: Observable<U235AstroEquatorialCoordinates>;
 
     constructor() {
         const message = 'Please call init() before subscribing to outputs';
-        this.equ2000$ = throwError(new Error(message));
+        this.geoEqu2000$ = throwError(new Error(message));
     }
 
     connect(clock: U235AstroClock): void {
@@ -24,10 +24,10 @@ export class U235AstroReactiveSchlyterMoon {
     init() {
         if (this.clockTick$ === undefined) {
             const msg = 'Requires clockTick$';
-            this.equ2000$ = throwError(new Error(msg));
+            this.geoEqu2000$ = throwError(new Error(msg));
         }
         else {
-            this.equ2000$ = this.clockTick$.pipe(
+            this.geoEqu2000$ = this.clockTick$.pipe(
                 map(clockTick => {
                     const geoEclOfDate = U235AstroReactiveSchlyterMoon.calculateGeoEclOfDate(clockTick.jd);
                     const geoEcl2000 = U235AstroReactiveSchlyterMoon.calculateGeoEcl2000(geoEclOfDate, clockTick.matPrecessFromDate);
@@ -72,11 +72,11 @@ export class U235AstroReactiveSchlyterMoon {
         return geoEcl2000;
     }
 
-    static calculateGeoEclOfDate(julianDate: number): U235AstroVector3D {
-        var KilometersPerAU = 149597870.691;
-        var EquatorialRadiusOfEarthInKilometers = 6378.137;
+    private static calculateGeoEclOfDate(julianDate: number): U235AstroVector3D {
+        const KilometersPerAU = 149597870.691;
+        const EquatorialRadiusOfEarthInKilometers = 6378.137;
 
-        var d = julianDate - 2451543.5;   // Day 0.0 occurs at 2000 Jan 0.0 UT
+        const d = julianDate - 2451543.5;   // Day 0.0 occurs at 2000 Jan 0.0 UT
 
         let Ms: number;     // Mean Anomaly of the Sun in radians
         let Mm: number;     // Mean Anomaly of the Moon in radians

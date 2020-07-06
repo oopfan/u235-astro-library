@@ -2,7 +2,6 @@ import { Observable, throwError } from 'rxjs';
 import { map, refCount, publishReplay } from 'rxjs/operators';
 import { U235AstroClockTick } from './u235-astro.interfaces';
 import { U235AstroMatrix3D } from './u235-astro-matrix3d.class';
-import { U235AstroEllipticalOrbit } from './u235-astro-elliptical-orbit.class';
 
 export class U235AstroClock {
 
@@ -12,13 +11,7 @@ export class U235AstroClock {
   // Outputs:
   clockTick$: Observable<U235AstroClockTick>;
 
-  // Implementation:
-  private earthOrbit: U235AstroEllipticalOrbit;
-
   constructor() {
-    const elements = U235AstroEllipticalOrbit.getStandishOrbitalElements().from_1800ad_to_2050ad;
-    this.earthOrbit = new U235AstroEllipticalOrbit(elements.earth);
-
     const message = 'Please call init() before subscribing to outputs';
     this.clockTick$ = throwError(new Error(message));
   }
@@ -46,8 +39,6 @@ export class U235AstroClock {
           matPrecessToDate.setRotateZ(-precessionSinceJ2000 / 180 * Math.PI);
           const matPrecessFromDate = new U235AstroMatrix3D();
           matPrecessFromDate.setRotateZ(precessionSinceJ2000 / 180 * Math.PI);
-          this.earthOrbit.setJulianDate(jd);
-          const earthHelEcl2000 = this.earthOrbit.getEclipticPosition();
           return {
             date,
             dayFraction,
@@ -60,8 +51,7 @@ export class U235AstroClock {
             matEquToEcl,
             matEclToEqu,
             matPrecessToDate,
-            matPrecessFromDate,
-            earthHelEcl2000
+            matPrecessFromDate
           };
         }),
         publishReplay(1),

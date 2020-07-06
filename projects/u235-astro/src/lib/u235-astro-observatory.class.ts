@@ -14,6 +14,7 @@ export class U235AstroObservatory {
   // Outputs:
   lmst$: Observable<number>;
   matEquToHor$: Observable<U235AstroMatrix3D>;
+  matHorToEqu$: Observable<U235AstroMatrix3D>;
 
   constructor() {
     const message = 'Please call init() before subscribing to outputs';
@@ -64,6 +65,28 @@ export class U235AstroObservatory {
           rotZ.setRotateZ(lmst / 12 * Math.PI);
           const mat = new U235AstroMatrix3D();
           mat.matrixMultiply(rotY).matrixMultiply(rotZ);
+          return mat;
+        }),
+        publishReplay(1),
+        refCount()
+      );
+    }
+
+    if (this.latitude$ === undefined) {
+      this.matHorToEqu$ = throwError(new Error('Requires latitude$'));
+    }
+    else {
+      this.matHorToEqu$ = combineLatest(
+        this.latitude$,
+        this.lmst$
+      ).pipe(
+        map(([latitude, lmst]) => {
+          const rotY = new U235AstroMatrix3D();
+          rotY.setRotateY((latitude - 90) / 180 * Math.PI);
+          const rotZ = new U235AstroMatrix3D();
+          rotZ.setRotateZ(-lmst / 12 * Math.PI);
+          const mat = new U235AstroMatrix3D();
+          mat.matrixMultiply(rotZ).matrixMultiply(rotY);
           return mat;
         }),
         publishReplay(1),

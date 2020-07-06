@@ -110,7 +110,7 @@ export class AppComponent implements OnInit {
       for (let object of this.celestialObjects) {
         const target = new MyTarget();
         target.name$ = of(object.name);
-        target.equ2000$ = of({
+        target.geoEqu2000$ = of({
           rightAscension: object.ra2000,
           declination: object.de2000
         });
@@ -121,26 +121,26 @@ export class AppComponent implements OnInit {
 
       const moonTarget = new MyTarget();
       moonTarget.name$ = of('Moon');
-      moonTarget.equ2000$ = this.moon.equ2000$;
+      moonTarget.geoEqu2000$ = this.moon.geoEqu2000$;
       moonTarget.connect(observatory);
       moonTarget.init();
       targets.push(moonTarget);
 
       const bodies = [
-        { name: 'Sun', measure: 'sunEqu2000$' },
-        { name: 'Mercury', measure: 'mercuryEqu2000$' },
-        { name: 'Venus', measure: 'venusEqu2000$' },
-        { name: 'Mars', measure: 'marsEqu2000$' },
-        { name: 'Jupiter', measure: 'jupiterEqu2000$' },
-        { name: 'Saturn', measure: 'saturnEqu2000$' },
-        { name: 'Uranus', measure: 'uranusEqu2000$' },
-        { name: 'Neptune', measure: 'neptuneEqu2000$' },
-        { name: 'Pluto', measure: 'plutoEqu2000$' },
+        { name: 'Sun', measure: 'sunGeoEqu2000$' },
+        { name: 'Mercury', measure: 'mercuryGeoEqu2000$' },
+        { name: 'Venus', measure: 'venusGeoEqu2000$' },
+        { name: 'Mars', measure: 'marsGeoEqu2000$' },
+        { name: 'Jupiter', measure: 'jupiterGeoEqu2000$' },
+        { name: 'Saturn', measure: 'saturnGeoEqu2000$' },
+        { name: 'Uranus', measure: 'uranusGeoEqu2000$' },
+        { name: 'Neptune', measure: 'neptuneGeoEqu2000$' },
+        { name: 'Pluto', measure: 'plutoGeoEqu2000$' },
       ];
       for (let body of bodies) {
         const target = new MyTarget();
         target.name$ = of(body.name);
-        target.equ2000$ = this.solarSystem[body.measure];
+        target.geoEqu2000$ = this.solarSystem[body.measure];
         target.connect(observatory);
         target.init();
         targets.push(target);

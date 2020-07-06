@@ -1,13 +1,69 @@
 # u235-astro
 
 > This Angular library contains a collection of components, directives and classes that are
-useful for creating Astronomy applications.
+useful for creating Astronomy applications. The library calculates the position of the Sun
+and planets using Standish orbital elements for elliptical orbits, and solving Kepler's
+equation. The Moon's position is high-precision by Schlyter. For other objects like stars,
+galaxies, and nebulae you may directly enter catalog coordinates (see sample applications below).
 
-> Note: Version 0.0.9 and earlier, Altitude and Azimuth were calculated relative to the
-Earth's center. Now beginning with version 0.0.10 Altitude and Azimuth are relative to the
-Observatory's location on the Earth's surface. All other coordinates including Right Ascension
-and Declination remain relative to the Earth's center. This change mostly affected the position
-of the Moon.
+## Release Notes
+### Version 1.0.0
+* Observable names changed to indicate the coordinate system, origin, and epoch:
+    1. *2000* indicates catalog coordinates for J2000.
+    1. *Now* indicates coordinates transformed for precession since J2000.
+    1. *Geo* indicates *Geocentric* coordinates relative to the Earth's center.
+    1. *Topo* indicates *Topocentric* coordinates relative to an observer on the Earth's surface.
+    1. *Equ* indicates *Equatorial* coordinates relative to the Earth's equator projected onto space.
+    1. *Ecl* indicates *Ecliptic* coordinates relative to the plane of the Earth's orbit.
+    1. *Hor* indicates *Horizontal* coordinates relative to points on the compass and degrees above the horizon.
+* Many more observables added to the *U235AstroTarget* class:
+    1. Input *geoEqu2000$* replaces *equ2000$*.
+    1. Output *geoEquNow$* replaces *equNow$*.
+    1. Output *topoEqu2000$* added.
+    1. Output *topoEquNow$* added.
+    1. Output *geoEcl2000$* added.
+    1. Output *geoEclNow$* added.
+    1. Output *topoEcl2000$* added.
+    1. Output *topoEclNow$* added.
+    1. Output *geoHor2000$* added.
+    1. Output *geoHorNow$* added.
+    1. Output *topoHor2000$* added.
+    1. Output *topoHorNow$* replaces *horNow$*.
+    1. Output *hourAngle$* remains but know that it now uses *topoEquNow$*.
+    1. Note that the difference between *geocentric* and *topocentric* coordinates mostly affects nearby targets
+    like the Moon. For distant objects there is not much impact moving from the Earth's center to its surface.
+* Changes to interfaces:
+    1. *earthHelEcl2000* property removed from *U235AstroClockTick* interface.
+    1. *U235AstroEclipticCoordinates* interface added.
+    1. *distance* property added to *U235AstroEquatorialCoordinates*, *U235AstroEclipticCoordinates*, and
+    *U235AstroHorizontalCoordinates* interfaces. Units of measurement are *Astronomical Units*.
+    1. *distance* is calculated for the Sun, Moon, and Planets, however if your application wants to track
+    other objects like stars, galaxies or nebulae then you will enter the catalog coordinates yourself. In
+    this case leave the *distance* property undefined. This indicates to the library that the target is a
+    very great distance away. For whatever reason if your application can not leave it undefined that use a
+    large number like 1000 but don't use Number.Infinity.
+* Changes to *U235AstroObservatory* class:
+    1. *matHorToEqu$* output observable added.
+* Changes to *U235AstroReactiveSchlyterMoon* class:
+    1. *equ2000$* output observable renamed to *geoEqu2000$*.
+* Changes to *U235AstroReactiveSolarSystem* class:
+    1. *sunEqu2000$* output observable renamed to *sunGeoEqu2000$*.
+    1. *mercuryEqu2000$* output observable renamed to *mercuryGeoEqu2000$*.
+    1. *venusEqu2000$* output observable renamed to *venusGeoEqu2000$*.
+    1. *marsEqu2000$* output observable renamed to *marsGeoEqu2000$*.
+    1. *jupiterEqu2000$* output observable renamed to *jupiterGeoEqu2000$*.
+    1. *saturnEqu2000$* output observable renamed to *saturnGeoEqu2000$*.
+    1. *uranusEqu2000$* output observable renamed to *uranusGeoEqu2000$*.
+    1. *neptuneEqu2000$* output observable renamed to *neptuneGeoEqu2000$*.
+    1. *plutoEqu2000$* output observable renamed to *plutoGeoEqu2000$*.
+
+### Version 0.0.10
+* Altitude and Azimuth are now relative to the Observatory's location on the Earth's surface. All other
+coordinates including Right Ascension and Declination remain relative to the Earth's center. This change
+mostly affected the position of the Moon.
+
+### Version 0.0.9 and earlier
+* Altitude and Azimuth were calculated relative to the Earth's center.
 
 ## How to use?
 ```javascript
@@ -63,24 +119,27 @@ interface U235AstroClockTick {
     matEclToEqu: U235AstroMatrix3D, // Transform Ecl to Equ coords.
     matPrecessToDate: U235AstroMatrix3D, // Precess from J2000 to Date
     matPrecessFromDate: U235AstroMatrix3D;  // Precess from Date to J2000
-    earthHelEcl2000: U235AstroVector3D   // Heliocentric Ecliptic Earth
 }
 
-// Emitted by equ2000$ and equNow$ Observables of U235AstroTarget  
+// Emitted by several Observables of U235AstroTarget
 interface U235AstroEquatorialCoordinates {
-    rightAscension: number;
-    declination: number;
-    distance?: number;  // The distance to the target relative to the Earth's center
-                        // in Astronomical Units. It is calculated for the Sun, Moon,
-                        // and Planets, however if your application defines a target
-                        // like a star then leave it undefined. If this is not possible
-                        // then choose a number like 1000. Don't use Number.Infinity
+    rightAscension: number;     // Hours
+    declination: number;        // Degrees
+    distance?: number;          // Astronomical Units (AU)
 }
 
-// Emitted by horNow$ Observable of U235AstroTarget
+// Emitted by several Observables of U235AstroTarget
+interface U235AstroEclipticCoordinates {
+    latitude: number;           // Degrees
+    longitude: number;          // Degrees
+    distance: number;           // Astronomical Units (AU)
+}
+
+// Emitted by several Observables of U235AstroTarget
 interface U235AstroHorizontalCoordinates {
-    azimuth: number;
-    altitude: number;   // These are Topocentric coordinates.
+    azimuth: number;            // Degrees
+    altitude: number;           // Degrees
+    distance: number;           // Astronomical Units (AU)
 }
 
 // Controls flash properties (see docs for u235-astro-flash)
@@ -125,6 +184,7 @@ class U235AstroObservatory {
     // Outputs:
     lmst$: Observable<number>;
     matEquToHor$: Observable<U235AstroMatrix3D>;
+    matHorToEqu$: Observable<U235AstroMatrix3D>;
     // Methods:
     connect(clock: U235AstroClock);
     init();
@@ -133,14 +193,27 @@ class U235AstroObservatory {
 // Reactive:
 class U235AstroTarget {
     // Inputs:
+    geoEqu2000$: Observable<U235AstroEquatorialCoordinates>;
     name$: Observable<string>;
-    equ2000$: Observable<U235AstroEquatorialCoordinates>;
     clockTick$: Observable<U235AstroClockTick>;
     matEquToHor$: Observable<U235AstroMatrix3D>;
+    matHorToEqu$: Observable<U235AstroMatrix3D>;
     lmst$: Observable<number>;
-    // Outputs:
-    equNow$: Observable<U235AstroEquatorialCoordinates>;
-    horNow$: Observable<U235AstroHorizontalCoordinates>;
+    // Outputs (equatorial):
+    geoEquNow$: Observable<U235AstroEquatorialCoordinates>;
+    topoEqu2000$: Observable<U235AstroEquatorialCoordinates>;
+    topoEquNow$: Observable<U235AstroEquatorialCoordinates>;
+    // Outputs (ecliptic):
+    geoEcl2000$: Observable<U235AstroEclipticCoordinates>;
+    geoEclNow$:  Observable<U235AstroEclipticCoordinates>;
+    topoEcl2000$: Observable<U235AstroEclipticCoordinates>;
+    topoEclNow$:  Observable<U235AstroEclipticCoordinates>;
+    // Outputs (horizontal):
+    geoHor2000$: Observable<U235AstroHorizontalCoordinates>;
+    geoHorNow$: Observable<U235AstroHorizontalCoordinates>;
+    topoHor2000$: Observable<U235AstroHorizontalCoordinates>;
+    topoHorNow$: Observable<U235AstroHorizontalCoordinates>;
+    // Output (misc):
     hourAngle$: Observable<number>;
     // Methods:
     connect(observatory: U235AstroObservatory);
@@ -152,15 +225,15 @@ class U235AstroReactiveSolarSystem {
     // Inputs:
     clockTick$: Observable<U235AstroClockTick>;
     // Outputs:
-    sunEqu2000$: Observable<U235AstroEquatorialCoordinates>;
-    mercuryEqu2000$: Observable<U235AstroEquatorialCoordinates>;
-    venusEqu2000$: Observable<U235AstroEquatorialCoordinates>;
-    marsEqu2000$: Observable<U235AstroEquatorialCoordinates>;
-    jupiterEqu2000$: Observable<U235AstroEquatorialCoordinates>;
-    saturnEqu2000$: Observable<U235AstroEquatorialCoordinates>;
-    uranusEqu2000$: Observable<U235AstroEquatorialCoordinates>;
-    neptuneEqu2000$: Observable<U235AstroEquatorialCoordinates>;
-    plutoEqu2000$: Observable<U235AstroEquatorialCoordinates>;
+    sunGeoEqu2000$: Observable<U235AstroEquatorialCoordinates>;
+    mercuryGeoEqu2000$: Observable<U235AstroEquatorialCoordinates>;
+    venusGeoEqu2000$: Observable<U235AstroEquatorialCoordinates>;
+    marsGeoEqu2000$: Observable<U235AstroEquatorialCoordinates>;
+    jupiterGeoEqu2000$: Observable<U235AstroEquatorialCoordinates>;
+    saturnGeoEqu2000$: Observable<U235AstroEquatorialCoordinates>;
+    uranusGeoEqu2000$: Observable<U235AstroEquatorialCoordinates>;
+    neptuneGeoEqu2000$: Observable<U235AstroEquatorialCoordinates>;
+    plutoGeoEqu2000$: Observable<U235AstroEquatorialCoordinates>;
     // Methods:
     connect(clock: U235AstroClock);
     init();
@@ -171,7 +244,7 @@ class U235AstroReactiveSchlyterMoon {
     // Inputs:
     clockTick$: Observable<U235AstroClockTick>;
     // Outputs:
-    equ2000$: Observable<U235AstroEquatorialCoordinates>;
+    geoEqu2000$: Observable<U235AstroEquatorialCoordinates>;
     // Methods:
     connect(clock: U235AstroClock);
     init();
@@ -323,7 +396,7 @@ target.equ2000$ = of({
 target.connect(observatory);
 target.init();
 
-target.horNow$.subscribe(value => {
+target.topoHorNow$.subscribe(value => {
     console.log('Azimuth:', value.azimuth);
     console.log('Altitude:', value.altitude);
 });

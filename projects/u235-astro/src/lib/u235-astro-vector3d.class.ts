@@ -3,6 +3,13 @@ import { U235AstroMatrix3D } from './u235-astro-matrix3d.class';
 export class U235AstroVector3D {
   private elem: number[] = [0, 1, 1, 1];
 
+  assign(rhs: U235AstroVector3D): U235AstroVector3D {
+    this.elem[1] = rhs.elem[1];
+    this.elem[2] = rhs.elem[2];
+    this.elem[3] = rhs.elem[3];
+    return this;
+  }
+
   getElement(row: number): number {
     return this.elem[row];
   }

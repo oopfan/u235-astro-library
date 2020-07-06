@@ -19,7 +19,6 @@ export interface U235AstroClockTick {
     matEclToEqu: U235AstroMatrix3D;
     matPrecessToDate: U235AstroMatrix3D;
     matPrecessFromDate: U235AstroMatrix3D;
-    earthHelEcl2000: U235AstroVector3D;
 }
 
 export interface U235AstroEquatorialCoordinates {
@@ -28,9 +27,16 @@ export interface U235AstroEquatorialCoordinates {
     distance?: number;
 }
 
+export interface U235AstroEclipticCoordinates {
+    latitude: number;
+    longitude: number;
+    distance: number;
+}
+
 export interface U235AstroHorizontalCoordinates {
     azimuth: number;
     altitude: number;
+    distance: number;
 }
 
 export interface U235AstroRootHelper {
