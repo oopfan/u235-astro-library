@@ -47,6 +47,7 @@ export class U235AstroTarget {
     private geoHorNowVec$: Observable<U235AstroVector3D>;
     private topoHor2000Vec$: Observable<U235AstroVector3D>;
     private topoHorNowVec$: Observable<U235AstroVector3D>;
+    private matEquToEcl2000: U235AstroMatrix3D;
 
     constructor() {
         const message = 'Please call init() before subscribing to outputs';
@@ -62,6 +63,8 @@ export class U235AstroTarget {
         this.topoHor2000$ = throwError(new Error(message));
         this.topoHorNow$ = throwError(new Error(message));
         this.hourAngle$ = throwError(new Error(message));
+        this.matEquToEcl2000 = new U235AstroMatrix3D();
+        this.matEquToEcl2000.setRotateX(23.43928 / 180 * Math.PI);
     }
 
     connect(observatory: U235AstroObservatory): void {
@@ -95,14 +98,12 @@ export class U235AstroTarget {
             this.geoEcl2000Vec$ = throwError(new Error('Requires clockTick$'));
         }
         else {
-            this.geoEcl2000Vec$ = combineLatest(
-                this.geoEqu2000Vec$,
-                this.clockTick$
-            ).pipe(
-                map(([vecIn, clockTick]) => {
+            this.geoEcl2000Vec$ = this.geoEqu2000Vec$
+            .pipe(
+                map(vecIn => {
                     const vecOut = new U235AstroVector3D();
                     vecOut.assign(vecIn);
-                    vecOut.matrixMultiply(clockTick.matEquToEcl);
+                    vecOut.matrixMultiply(this.matEquToEcl2000);
                     return vecOut;
                 }),
                 publishReplay(1),
@@ -242,14 +243,12 @@ export class U235AstroTarget {
             this.topoEcl2000Vec$ = throwError(new Error('Requires clockTick$'));
         }
         else {
-            this.topoEcl2000Vec$ = combineLatest(
-                this.topoEqu2000Vec$,
-                this.clockTick$
-            ).pipe(
-                map(([vecIn, clockTick]) => {
+            this.topoEcl2000Vec$ = this.topoEqu2000Vec$
+            .pipe(
+                map(vecIn => {
                     const vecOut = new U235AstroVector3D();
                     vecOut.assign(vecIn);
-                    vecOut.matrixMultiply(clockTick.matEquToEcl);
+                    vecOut.matrixMultiply(this.matEquToEcl2000);
                     return vecOut;
                 }),
                 publishReplay(1),

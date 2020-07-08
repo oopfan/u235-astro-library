@@ -4,16 +4,44 @@
 useful for creating Astronomy applications. The library calculates the position of the Sun
 and planets using Standish orbital elements for elliptical orbits, and solving Kepler's
 equation. The Moon's position is high-precision by Schlyter. For other objects like stars,
-galaxies, and nebulae you may directly enter catalog coordinates (see sample applications below).
+galaxies, and nebulae you may directly enter J2000 catalog coordinates (see sample
+applications below).
+
+> PRECESSION: The library does not adjust for Nutation, which is the short-period motion of
+the true pole around the mean pole with an amplitude of about 9 arc-seconds and a variety of
+periods of up to 18.6 years, however it does adjust for lunisolar precession, which is the
+smooth long-period motion of the mean pole of the equator about the pole of the ecliptic
+with a period of about 26,000 years.
+
+> TIMESCALES: Planetary orbits and Earth's rotation are calculated using the same time,
+therefore the library considers Terrestrial Time (TT) and Universal Time (UT1) the same.
+
+> ACCURACY: As E.M.Standish of JPL/Caltech writes: "Lower accuracy formulae for planetary
+positions have a number of important applications when one doesn't need the full accuracy
+of an integrated ephemeris. They are often used in observation scheduling, telescope
+pointing, and prediction of certain phenomena as well as the planning and design of
+spacecraft missions." As Brian Morgan, the author of this Angular library writes:
+"Personally I have used these functions since 2016. The position of the inner planets is
+quite accurate, within a dozen arc-seconds when compared to an ephemeris. The outer planets
+suffer some loss of accuracy, most notably Saturn, which is off by about 3 arc-minutes as of
+this writing. Still however this is good enough for telescope pointing. As anecdotal
+evidence I designed a visualization tool using this library to virtually watch solar eclipses
+from home when I can't be there in person. I'll run the tool side-by-side with streaming
+video from the site. The mathematical progress of the eclipse with the tool is remarkably
+similar to what unfolds on the ground."
 
 ## Release Notes
+### Version 1.0.1
+* Bug fix: The transform between J2000 ecliptic and equatorial coordinates used an
+incorrect value for the obliquity of the ecliptic.
+
 ### Version 1.0.0
 * Observable names changed to indicate the coordinate system, origin, and epoch:
     1. *2000* indicates catalog coordinates for J2000.
     1. *Now* indicates coordinates transformed for precession since J2000.
     1. *Geo* indicates *Geocentric* coordinates relative to the Earth's center.
     1. *Topo* indicates *Topocentric* coordinates relative to an observer on the Earth's surface.
-    1. *Equ* indicates *Equatorial* coordinates relative to the Earth's equator projected onto space.
+    1. *Equ* indicates *Equatorial* coordinates relative to the Earth's equator projected into space.
     1. *Ecl* indicates *Ecliptic* coordinates relative to the plane of the Earth's orbit.
     1. *Hor* indicates *Horizontal* coordinates relative to points on the compass and degrees above the horizon.
 * Many more observables added to the *U235AstroTarget* class:

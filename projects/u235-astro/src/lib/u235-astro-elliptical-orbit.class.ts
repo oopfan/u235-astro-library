@@ -7,18 +7,24 @@ export class U235AstroEllipticalOrbit {
     private julianDate: number;
     private orbitalPosition: U235AstroOrbitalPosition;
     private eclipticPosition: U235AstroVector3D;
+    private equatorialPosition: U235AstroVector3D;
+    private matEclToEqu2000: U235AstroMatrix3D;
 
     constructor(elements: U235AstroEllipticalOrbitalElements) {
         this.elements = elements;
         this.julianDate = 2451545.0;
+        this.matEclToEqu2000 = new U235AstroMatrix3D();
+        this.matEclToEqu2000.setRotateX(-23.43928 / 180 * Math.PI);
         this.updateOrbitalPosition();
         this.updateEclipticPosition();
+        this.updateEquatorialPosition();
     }
 
     setJulianDate(jd: number) {
         this.julianDate = jd;
         this.updateOrbitalPosition();
         this.updateEclipticPosition();
+        this.updateEquatorialPosition();
     }
 
     getOrbitalPosition(): U235AstroOrbitalPosition {
@@ -29,12 +35,22 @@ export class U235AstroEllipticalOrbit {
         return this.eclipticPosition;
     }
 
+    getEquatorialPosition(): U235AstroVector3D {
+        return this.equatorialPosition;
+    }
+
     private updateOrbitalPosition() {
         this.orbitalPosition = U235AstroEllipticalOrbit.calculateOrbitalPosition(this.julianDate, this.elements);
     }
 
     private updateEclipticPosition() {
         this.eclipticPosition = U235AstroEllipticalOrbit.calculateEclipticPosition(this.julianDate, this.elements, this.orbitalPosition);
+    }
+
+    private updateEquatorialPosition() {
+        this.equatorialPosition = new U235AstroVector3D();
+        this.equatorialPosition.assign(this.eclipticPosition);
+        this.equatorialPosition.matrixMultiply(this.matEclToEqu2000);
     }
 
     static calculateOrbitalPosition(

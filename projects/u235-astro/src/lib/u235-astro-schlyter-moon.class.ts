@@ -12,9 +12,14 @@ export class U235AstroReactiveSchlyterMoon {
     // Outputs:
     geoEqu2000$: Observable<U235AstroEquatorialCoordinates>;
 
+    // Implementation:
+    private matEclToEqu2000: U235AstroMatrix3D;
+
     constructor() {
         const message = 'Please call init() before subscribing to outputs';
         this.geoEqu2000$ = throwError(new Error(message));
+        this.matEclToEqu2000 = new U235AstroMatrix3D();
+        this.matEclToEqu2000.setRotateX(-23.43928 / 180 * Math.PI);
     }
 
     connect(clock: U235AstroClock): void {
@@ -31,7 +36,7 @@ export class U235AstroReactiveSchlyterMoon {
                 map(clockTick => {
                     const geoEclOfDate = U235AstroReactiveSchlyterMoon.calculateGeoEclOfDate(clockTick.jd);
                     const geoEcl2000 = U235AstroReactiveSchlyterMoon.calculateGeoEcl2000(geoEclOfDate, clockTick.matPrecessFromDate);
-                    const geoEqu2000 = U235AstroReactiveSchlyterMoon.calculateGeoEqu2000(geoEcl2000, clockTick.matEclToEqu);
+                    const geoEqu2000 = U235AstroReactiveSchlyterMoon.calculateGeoEqu2000(geoEcl2000, this.matEclToEqu2000);
 
                     const result = geoEqu2000.getPolar();
                     let phi = result[0];
@@ -55,9 +60,7 @@ export class U235AstroReactiveSchlyterMoon {
 
     private static calculateGeoEqu2000(geoEcl2000: U235AstroVector3D, matEclToEqu: U235AstroMatrix3D): U235AstroVector3D {
         const geoEqu2000 = new U235AstroVector3D();
-        geoEqu2000.setElement(1, geoEcl2000.getElement(1));
-        geoEqu2000.setElement(2, geoEcl2000.getElement(2));
-        geoEqu2000.setElement(3, geoEcl2000.getElement(3));
+        geoEqu2000.assign(geoEcl2000);
         geoEqu2000.matrixMultiply(matEclToEqu);
         return geoEqu2000;
     }
@@ -65,9 +68,7 @@ export class U235AstroReactiveSchlyterMoon {
 
     private static calculateGeoEcl2000(geoEclOfDate: U235AstroVector3D, matPrecession: U235AstroMatrix3D): U235AstroVector3D {
         const geoEcl2000 = new U235AstroVector3D();
-        geoEcl2000.setElement(1, geoEclOfDate.getElement(1));
-        geoEcl2000.setElement(2, geoEclOfDate.getElement(2));
-        geoEcl2000.setElement(3, geoEclOfDate.getElement(3));
+        geoEcl2000.assign(geoEclOfDate);
         geoEcl2000.matrixMultiply(matPrecession);
         return geoEcl2000;
     }

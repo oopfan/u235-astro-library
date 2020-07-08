@@ -148,10 +148,79 @@ export class AppComponent implements OnInit {
       this.targets.push(targets);
     }
 
+    // this.testTransform();
     // this.testSNR();
     // this.testRoot1();
     // this.testRoot2();
     // this.testDate();
+  }
+
+  testTransform() {
+    // MICA:
+    // 2020 Jul 07 21:49:11.0 (UT1)
+    // JD 2459038.409155
+    // Saturn:
+    // Astrometic Mean Equator and Equinox of J2000.0 (geoEqu2000)
+    // RA 20:06:00.425, DEC -20:30:08.27, DIST 9.020653968
+    // Apparent Geocentric True Equator and Equinox of Date (geoEquNow)
+    // RA 20:07:12.460, DEC -20:26:31.68, DIST 9.020653968
+    // Apparent Geocentric True Ecliptic and Equinox of Date (geoEclNow)
+    // LON 299:35:26.6, DEC -0:12:45.3, DIST 9.020653968
+    // Apparent Topocentric True Equator and Equinox of Date (topoEquNow) Hayden Planetarium
+    // RA 20:07:12.495, DEC -20:26:32.06, DIST 9.020679768
+    // Apparent Topocentric Local Zenith and True North (topoHorNow) Hayden Planetarium
+    // ZA 127:17:23.1, AZ 85:34:36.4, DIST 9.020679768
+    // Apparent Topocentric True Equator and Equinox of Date (hourAngle) Hayden Planetarium
+    // LHA -8:08:39.51, DIST 9.020679768
+
+    const clock = new U235AstroClock();
+    const observatory = new U235AstroObservatory();
+    const target = new U235AstroTarget();
+
+    const utc = new Date(Date.UTC(2020, 6, 7, 21, 49, 11));
+    clock.date$ = of(utc);
+    clock.init();
+
+    observatory.name$ = of('Hayden Planetarium');
+    observatory.latitude$ = of(this.encode(40, 46, 53));
+    observatory.longitude$ = of(-this.encode(73, 58, 26));
+    observatory.connect(clock);
+    observatory.init();
+
+    target.name$ = of('Saturn');
+    target.geoEqu2000$ = of({
+      rightAscension: 20 + 6/60 + 0.425/3600,
+      declination: -(20 + 30/60 + 8.27/3600),
+      distance: 9.020653968
+    });
+    target.connect(observatory);
+    target.init();
+
+    target.geoEqu2000$.subscribe(value => {
+      console.log('geoEqu2000', value);
+    });
+
+    target.geoEquNow$.subscribe(value => {
+      console.log('geoEquNow', value);
+    });
+
+    target.geoEclNow$.subscribe(value => {
+      console.log('geoEclNow', value);
+    });
+
+    target.topoEquNow$.subscribe(value => {
+      console.log('topoEquNow', value);
+    });
+
+    target.topoHorNow$.subscribe(value => {
+      console.log('topoHorNow', value);
+    });
+
+    target.hourAngle$.subscribe(value => {
+      console.log('hourAngle', value);
+    });
+
+
   }
 
   testSNR() {
