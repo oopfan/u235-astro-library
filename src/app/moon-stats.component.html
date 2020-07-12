@@ -1,11 +1,13 @@
 <div *ngIf="moonStats$ | async as moonStats">
-    <svg xmlns="http://www.w3.org/2000/svg" width="110" height="110">
-        <g transform="translate(10,8)">
-            <clipPath id="CP">
-                <path [attr.d]="getMoonPath(moonStats.phasePct, moonStats.illuminationPct)" />
-            </clipPath>
-            <image
-                href="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/4gxYSUNDX1BST0ZJTEUAAQEAA
+    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="110" height="110" viewBox="0 0 110 110" overflow="visible" enable-background="new 0 0 110 110" xml:space="preserve">
+        <defs>
+            <path id="triangle" [attr.d]="getMoonPath(moonStats.phasePct, moonStats.illuminationPct)" />
+        </defs>
+        <clipPath id="clip1">
+            <use xlink:href="#triangle" />
+        </clipPath>
+        <g transform="matrix(1 0 0 1 10 8)" clip-path="url(#clip1)">
+            <image width="100" height="100" xlink:href="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/4gxYSUNDX1BST0ZJTEUAAQEAA
                 AxITGlubwIQAABtbnRyUkdCIFhZWiAHzgACAAkABgAxAABhY3NwTVNGVAAAAABJRUMgc1JHQgAAA
                 AAAAAAAAAAAAAAA9tYAAQAAAADTLUhQICAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
                 AAAAAAAAAAAAAAAAAAAABFjcHJ0AAABUAAAADNkZXNjAAABhAAAAGx3dHB0AAAB8AAAABRia3B0A
@@ -150,7 +152,8 @@
                 drZiYWPuUNfSng7/g4y/ah8MRqt54i8J+Ilxg/2h4XskL+hJt0iOfp+OaKKN9ylJrY0Na/4OSv2m
                 NQRvsV54E0aQrtWS08NxSNH7jzjIPzBFeMfGX/gsJ+058ebCSz8QfGfxnHYzq0c1po1wmh21yrdV
                 kislhSReOjgiiiq2V0Jyb3Pm6WVp5WkkZndyWZmOSxPUk02iipEFFFFABRRRQB//9k="
-                clip-path="url(#CP)"/>
+                transform="matrix(1 0 0 1 0 0)">
+            </image>
         </g>
     </svg>
     <span>{{ getMoonPhase(moonStats.phasePct) }} {{ moonStats.illuminationPct | percent }}</span>
