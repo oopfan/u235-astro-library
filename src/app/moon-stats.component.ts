@@ -18,14 +18,14 @@ export class MoonStatsComponent implements OnInit {
     moonStats$: Observable<MoonStats>;
 
     private moonPhase = [
-        {phasePct: 1, phaseStr: 'Full Moon'},
-        {phasePct: 0.55, phaseStr: 'Waxing Gibbous'},
-        {phasePct: 0.5, phaseStr: 'First Quarter'},
-        {phasePct: 0.05, phaseStr: 'Waxing Crescent'},
-        {phasePct: 0, phaseStr: 'New Moon'},
-        {phasePct: -0.45, phaseStr: 'Waning Crescent'},
-        {phasePct: -0.5, phaseStr: 'Last Quarter'},
-        {phasePct: -0.95, phaseStr: 'Waning Gibbous'}
+        {phasePct: 0.975, phaseStr: 'Full Moon'},
+        {phasePct: 0.575, phaseStr: 'Waxing Gibbous'},
+        {phasePct: 0.525, phaseStr: 'First Quarter'},
+        {phasePct: 0.025, phaseStr: 'Waxing Crescent'},
+        {phasePct: -0.025, phaseStr: 'New Moon'},
+        {phasePct: -0.475, phaseStr: 'Waning Crescent'},
+        {phasePct: -0.525, phaseStr: 'Last Quarter'},
+        {phasePct: -0.975, phaseStr: 'Waning Gibbous'}
     ];
     
     getMoonPhase = (phasePct: number): string => {

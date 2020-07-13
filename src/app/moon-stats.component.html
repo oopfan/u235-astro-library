@@ -156,5 +156,8 @@
             </image>
         </g>
     </svg>
-    <span>{{ getMoonPhase(moonStats.phasePct) }} {{ moonStats.illuminationPct | percent }}</span>
+    <span>
+        {{ getMoonPhase(moonStats.phasePct) }} {{ moonStats.illuminationPct | percent }}
+        <!-- (Phase: {{ moonStats.phasePct | number: '1.5-5' }}) -->
+    </span>
 </div>
