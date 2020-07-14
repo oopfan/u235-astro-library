@@ -27,6 +27,7 @@ class MyTarget extends U235AstroTarget {
   onHourAngleChange() {
     this.hourAngleChange.next({});
   }
+
 }
 
 @Component({
@@ -88,6 +89,17 @@ export class AppComponent implements OnInit {
   moon = new U235AstroReactiveSchlyterMoon();
 
   constructor(private utility: U235AstroService) {}
+
+  moonPhase: string;
+  moonIllumination: number;
+
+  onMoonPhaseChange(value: string) {
+    this.moonPhase = value;
+  }
+
+  onMoonIlluminationChange(value: number) {
+    this.moonIllumination = value;
+  }
 
   ngOnInit(): void {
     this.clock.date$ = interval(1000).pipe(startWith(0), map(() => new Date()));

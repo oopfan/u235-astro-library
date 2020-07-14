@@ -1,5 +1,5 @@
-import { Component, OnInit } from "@angular/core";
-import { Observable, interval, of, combineLatest } from 'rxjs';
+import { Component, OnInit, Output, EventEmitter, OnDestroy } from "@angular/core";
+import { Observable, interval, of, combineLatest, Subscription } from 'rxjs';
 import { startWith, map } from 'rxjs/operators';
 import { U235AstroClock, U235AstroReactiveSolarSystem, U235AstroReactiveSchlyterMoon, U235AstroObservatory, U235AstroTarget, U235AstroVector3D, U235AstroMatrix3D } from 'u235-astro';
 
@@ -7,13 +7,16 @@ interface MoonStats {
     phasePct: number;
     illuminationPct: number;
 }
-  
-  @Component({
+
+@Component({
     selector: 'app-moon-stats',
     templateUrl: './moon-stats.component.html',
     styleUrls: [ './moon-stats.component.css' ]
 })
-export class MoonStatsComponent implements OnInit {
+export class MoonStatsComponent implements OnInit, OnDestroy {
+    @Output() notifyMoonPhase:EventEmitter<string> = new EventEmitter();
+    @Output() notifyMoonIllumination:EventEmitter<number> = new EventEmitter();
+    moonStatsSubscription: Subscription;
 
     moonStats$: Observable<MoonStats>;
 
@@ -105,5 +108,17 @@ export class MoonStatsComponent implements OnInit {
             })
         );
 
+        this.moonStatsSubscription = this.moonStats$.subscribe(value => {
+            this.notifyMoonPhase.emit(this.getMoonPhase(value.phasePct));
+            this.notifyMoonIllumination.emit(value.illuminationPct);
+        });
+
     }
+
+    ngOnDestroy(): void {
+        if (this.moonStatsSubscription) {
+            this.moonStatsSubscription.unsubscribe();
+        }
+    }
+
 }
