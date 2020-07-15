@@ -12,8 +12,14 @@
     justify-content: center;
 }
 
+.moon-image {
+    margin-top: 10px;
+    margin-bottom: 3px;
+    margin-left: 10px;
+}
+
 .moon-stats {
-    margin-left: 3px;
+    margin-left: 7px;
     text-align: center;
 }
 

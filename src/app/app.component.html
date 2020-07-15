@@ -1,17 +1,15 @@
 <div class="container">
 
     <div class="horizontal-layout moon-color">
-        <div class="vertical-layout">
+        <div class="vertical-layout moon-image">
             <app-moon-stats
                 (notifyMoonPhase)="onMoonPhaseChange($event)"
                 (notifyMoonIllumination)="onMoonIlluminationChange($event)"
             ></app-moon-stats>
         </div>
-        <div class="vertical-layout vertical-center">
-            <div class="moon-stats">
-                <p class="moon-phase">{{ moonPhase }}</p>
-                <p class="moon-illumination">{{ moonIllumination | percent}}</p>
-            </div>
+        <div class="vertical-layout vertical-center moon-stats">
+            <p class="moon-phase">{{ moonPhase }}</p>
+            <p class="moon-illumination">{{ moonIllumination | percent}}</p>
         </div>
     </div>
 
