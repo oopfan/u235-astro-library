@@ -2,15 +2,24 @@ import { Component, OnInit } from '@angular/core';
 import { interval, Subject, of } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import {
-  U235AstroFlashArg, U235AstroClock, U235AstroObservatory, U235AstroTarget, U235AstroSNR,
+  U235AstroMoonPhaseStats, U235AstroFlashArg, U235AstroClock, U235AstroObservatory, U235AstroTarget, U235AstroSNR,
   U235AstroRootHelper, U235AstroService, U235AstroSyncSNR, U235AstroReactiveSolarSystem, U235AstroReactiveSchlyterMoon
 } from 'u235-astro';
 
-interface MoonStats {
+class MyMoonPhase {
+  dateOffset: number;
   date: Date;
-  phaseName: string;
-  phasePct: number;
-  illuminationPct: number;
+  phase: string;
+  illumination: number;
+
+  constructor(dateOffset: number = 0) { this.dateOffset = dateOffset; }
+
+  onChange(value: U235AstroMoonPhaseStats) {
+    this.date = value.date;
+    this.phase = value.phaseName;
+    this.illumination = value.illuminationPct;
+  }
+
 }
 
 class MyTarget extends U235AstroTarget {
@@ -37,29 +46,12 @@ class MyTarget extends U235AstroTarget {
 
 }
 
-class MyMoonPhase {
-  dateInit: Date;
-  dateOffset: number = 0;
-  date: Date;
-  phase: string;
-  illumination: number;
-
-  onMoonStatsChange(value: MoonStats) {
-    this.date = value.date;
-    this.phase = value.phaseName;
-    this.illumination = value.illuminationPct;
-  }
-
-}
-
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-
-  moonPhases: MyMoonPhase[] = [];
 
   encode = (degree: number, minute: number, second: number): number => {
     return degree + (minute + second / 60) / 60;
@@ -108,18 +100,17 @@ export class AppComponent implements OnInit {
 
   clock = new U235AstroClock();
   observatories: U235AstroObservatory[] = [];
-  targets: MyTarget[][] = [];
   solarSystem = new U235AstroReactiveSolarSystem();
   moon = new U235AstroReactiveSchlyterMoon();
+
+  moonPhases: MyMoonPhase[] = [];
+  targets: MyTarget[][] = [];
 
   constructor(private utility: U235AstroService) {}
 
   ngOnInit(): void {
-    this.moonPhases.push(new MyMoonPhase());
-
-    for (let index = 1; index <= 5; index++) {
-      const moonPhase = new MyMoonPhase();
-      moonPhase.dateOffset = index*1000*60*60*24;
+    for (let index = 0; index < 6; index++) {
+      const moonPhase = new MyMoonPhase(index * 1000*60*60*24);
       this.moonPhases.push(moonPhase);
     }
 

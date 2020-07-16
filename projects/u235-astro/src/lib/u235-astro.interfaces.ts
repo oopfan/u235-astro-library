@@ -1,6 +1,24 @@
 import { U235AstroMatrix3D } from './u235-astro-matrix3d.class';
 import { U235AstroVector3D } from './u235-astro-vector3d.class';
 
+export interface U235AstroMoonPhaseStats {
+    date: Date;     // The exact time that the Moon's phase was updated.
+    phaseName: string;  // The name of the phase, for example 'Full Moon'.
+    phasePct: number;   // The difference in geocentric ecliptic longitude
+                        // between the Moon and Sun:
+                        //   0: New Moon,
+                        //   0.5: First Quarter,
+                        //  -0.5: Last Quarter,
+                        //   1.0 or -1.0: Full Moon
+                        // and all numbers between.
+    illuminationPct: number;    // The percentage of the Moon's disc that
+                                // is illuminated. A number from 0 to 1.
+                                // This is not necessarily the same as the
+                                // absolute value of 'phasePct'. Instead, it
+                                // is proportional to the angular separation
+                                // between the Moon and Sun.
+}
+
 export interface U235AstroFlashArg {
     backgroundColor?: string;
     transitionDuration?: string;

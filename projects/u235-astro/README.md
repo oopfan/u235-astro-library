@@ -31,6 +31,13 @@ video from the site. The mathematical progress of the eclipse with the tool is r
 similar to what unfolds on the ground."
 
 ## Release Notes
+
+### Version 1.1.0
+* New *u235-astro-moon-phase* component. Add it to your markup with no arguments to display
+a 100px x 100px image of the Moon shown with the current phase. Every minute the image will
+update as the Moon and Sun change astronomical position. Optionally, you can specify four
+arguments. Please refer to the component's description for argument details.
+
 ### Version 1.0.1
 * Bug fix: The transform between J2000 ecliptic and equatorial coordinates used an
 incorrect value for the obliquity of the ecliptic.
@@ -116,11 +123,12 @@ export class AppModule { }
 ```html
 <u235-astro-altitude [degrees]="altitude"></u235-astro-altitude>
 <u235-astro-azimuth [degrees]="azimuth"></u235-astro-azimuth>
-<u235-astro-hour-angle [hours]="hourAngle"></u235-astro-hour-angle>
-<u235-astro-right-ascension [hours]="rightAscension"></u235-astro-right-ascension>
 <u235-astro-declination [degrees]="declination"></u235-astro-declination>
+<u235-astro-hour-angle [hours]="hourAngle"></u235-astro-hour-angle>
 <u235-astro-latitude [degrees]="latitude"></u235-astro-latitude>
 <u235-astro-longitude [degrees]="longitude"></u235-astro-longitude>
+<u235-astro-moon-phase (four optional arguments, see description)></u235-astro-moon-phase>
+<u235-astro-right-ascension [hours]="rightAscension"></u235-astro-right-ascension>
 <u235-astro-time [hours]="sideralTime"></u235-astro-time>
 ```
 * See section: Component Details
@@ -133,6 +141,25 @@ export class AppModule { }
 
 ### Interfaces:
 ```javascript
+// Emitted via notify() of u235-astro-moon-phase component
+interface U235AstroMoonPhaseStats {
+    date: Date;     // The exact time that the Moon's phase was updated.
+    phaseName: string;  // The name of the phase, for example 'Full Moon'.
+    phasePct: number;   // The difference in geocentric ecliptic longitude
+                        // between the Moon and Sun:
+                        //   0: New Moon,
+                        //   0.5: First Quarter,
+                        //  -0.5: Last Quarter,
+                        //   1.0 or -1.0: Full Moon
+                        // and all numbers between.
+    illuminationPct: number;    // The percentage of the Moon's disc that
+                                // is illuminated. A number from 0 to 1.
+                                // This is not necessarily the same as the
+                                // absolute value of 'phasePct'. Instead, it
+                                // is proportional to the angular separation
+                                // between the Moon and Sun.
+}
+
 // Emitted by clockTick$ Observable of U235AstroClock
 interface U235AstroClockTick {
     date: Date,             // Date at moment
@@ -509,6 +536,30 @@ catch(e) {
 ```
 
 ## Component Details
+
+### **```u235-astro-moon-phase```** displays a 100px x 100px image of the Moon shown with the current phase
+```html
+<u235-astro-moon-phase
+    [date-fixed]="aJavascriptDate"
+    [date-offset]="millisecondsFromDate"
+    [box-size]="boxSize"
+    (notify)="onChange($event)"
+></u235-astro-moon-phase>
+```
+* All arguments are optional. The default behavior is to display a 100px x 100px image of
+the Moon shown with the current phase. Every minute the image will update as the Moon and
+Sun change astronomical position.
+* **```[date-fixed]```** overrides the default update behavior. The given Javascript object
+selects the displayed phase. It will no longer update once per minute.
+* **```[date-offset]```** is the number of milliseconds added to the current date. The default
+is zero. If *date-fixed* is specified then *date-offset* is added to it before performing
+the phase calculation.
+* **```[box-size]```** scales the image to the given width and height. The image is square
+so only one argument is needed.
+* **```(notify)```** is a user-function that is called when the image is updated. It contains
+useful information that your application can use to display the current illuminated percent
+of the Moon's disc, for example. See the *Interfaces* section for the definition of
+U235AstroMoonPhaseStats.
 
 ### **```u235-astro-altitude```** displays the given altitude in the following format: *[+/-]dd&deg; mm'*
 ```html

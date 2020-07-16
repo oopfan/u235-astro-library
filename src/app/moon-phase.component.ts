@@ -3,11 +3,12 @@ import { Observable, interval, of, combineLatest, Subscription } from 'rxjs';
 import { startWith, map } from 'rxjs/operators';
 import { U235AstroClock, U235AstroReactiveSolarSystem, U235AstroReactiveSchlyterMoon, U235AstroObservatory, U235AstroTarget, U235AstroVector3D, U235AstroMatrix3D } from 'u235-astro';
 
-interface MoonStats {
-    date: Date;
-    phaseName: string;
-    phasePct: number;
-    illuminationPct: number;
+interface U235AstroMoonPhaseStats {
+    date: Date;                 // The exact time of this event
+    phaseName: string;          // The name of this phase, for example 'Full Moon', 'Waxing Crescent', etc.
+    phasePct: number;           // Difference in geocentric ecliptic longitude between the Moon and Sun
+                                // (0: New Moon, 0.5: First Quarter, -0.5: Last Quarter, 1.0 or -1.0: Full Moon)
+    illuminationPct: number;    // The percentage of the Moon's disc which is illuminated (0.0 to 1.0)
 }
 
 @Component({
@@ -16,13 +17,13 @@ interface MoonStats {
     styleUrls: [ './moon-phase.component.css' ]
 })
 export class MoonPhaseComponent implements OnInit, OnDestroy {
-    @Input() dateInit: Date;
-    @Input() dateOffset: number = 0;
-    @Input() width = 100;
-    @Output() notifyMoonStats:EventEmitter<MoonStats> = new EventEmitter();
-    moonStatsSubscription: Subscription;
+    @Input('date-init') dateInit: Date;
+    @Input('date-offset') dateOffset: number = 0;
+    @Input('box-size') boxSize = 100;
+    @Output('notify-update') notifyUpdate:EventEmitter<U235AstroMoonPhaseStats> = new EventEmitter();
 
-    moonStats$: Observable<MoonStats>;
+    subscription: Subscription;
+    stats$: Observable<U235AstroMoonPhaseStats>;
 
     static instanceId = 0;
     pathId = '';
@@ -61,6 +62,7 @@ export class MoonPhaseComponent implements OnInit, OnDestroy {
     }
     
     ngOnInit(): void {
+
         MoonPhaseComponent.instanceId++;
         this.pathId = "u235-astro-moon-phase-path" + MoonPhaseComponent.instanceId;
         this.clipId = "u235-astro-moon-phase-clip" + MoonPhaseComponent.instanceId;
@@ -100,7 +102,7 @@ export class MoonPhaseComponent implements OnInit, OnDestroy {
         targetSun.connect(observatory);
         targetSun.init();
     
-        this.moonStats$ = combineLatest(
+        this.stats$ = combineLatest(
             clock.date$,
             targetMoon.geoEcl2000$,
             targetSun.geoEcl2000$
@@ -127,15 +129,15 @@ export class MoonPhaseComponent implements OnInit, OnDestroy {
             })
         );
 
-        this.moonStatsSubscription = this.moonStats$.subscribe(value => {
-            this.notifyMoonStats.emit(value);
+        this.subscription = this.stats$.subscribe(value => {
+            this.notifyUpdate.emit(value);
         });
 
     }
 
     ngOnDestroy(): void {
-        if (this.moonStatsSubscription) {
-            this.moonStatsSubscription.unsubscribe();
+        if (this.subscription) {
+            this.subscription.unsubscribe();
         }
     }
 

@@ -22,6 +22,7 @@ export * from './lib/u235-astro-declination.component';
 export * from './lib/u235-astro-hour-angle.component';
 export * from './lib/u235-astro-latitude.component';
 export * from './lib/u235-astro-longitude.component';
+export * from './lib/u235-astro-moon-phase.component';
 export * from './lib/u235-astro-right-ascension.component';
 export * from './lib/u235-astro-time.component';
 export * from './lib/u235-astro.module';

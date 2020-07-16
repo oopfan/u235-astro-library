@@ -4,12 +4,11 @@
         <div *ngFor="let moonPhase of moonPhases">
             <div class="horizontal-layout">
                 <div class="vertical-layout vertical-center moon-image">
-                    <app-moon-phase
-                        [dateInit]="moonPhase.dateInit"
-                        [dateOffset]="moonPhase.dateOffset"
-                        width="70"
-                        (notifyMoonStats)="moonPhase.onMoonStatsChange($event)"
-                    ></app-moon-phase>
+                    <u235-astro-moon-phase
+                        [date-offset]="moonPhase.dateOffset"
+                        box-size="70"
+                        (notify-update)="moonPhase.onChange($event)"
+                    ></u235-astro-moon-phase>
                 </div>
                 <div class="vertical-layout vertical-center moon-stats">
                     <p class="moon-phase">{{ moonPhase.date.toDateString() }}</p>
@@ -20,6 +19,7 @@
         </div>
     </div>
 
+    <br />
     <h1 class="title">u235-astro-library</h1>
     <h2 class="subtitle">Sample Application</h2>
     <div>
