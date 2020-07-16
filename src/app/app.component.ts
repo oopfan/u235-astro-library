@@ -109,7 +109,7 @@ export class AppComponent implements OnInit {
   constructor(private utility: U235AstroService) {}
 
   ngOnInit(): void {
-    for (let index = 0; index < 6; index++) {
+    for (let index = 0; index < 30; index++) {
       const moonPhase = new MyMoonPhase(index * 1000*60*60*24);
       this.moonPhases.push(moonPhase);
     }
