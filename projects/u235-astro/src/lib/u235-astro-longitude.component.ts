@@ -5,7 +5,7 @@ import { U235AstroService } from './u235-astro.service';
   selector: 'u235-astro-longitude',
   template: `
     <span>
-      {{degree}}&deg; {{minute}}' {{second}}" {{eastwest}}
+      {{degree}}&deg;&nbsp;{{minute}}'&nbsp;{{second}}"&nbsp;{{eastwest}}
     </span>
   `,
   styles: [

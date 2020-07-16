@@ -1,15 +1,22 @@
 <div class="container">
 
     <div class="horizontal-layout moon-color">
-        <div class="vertical-layout moon-image">
-            <app-moon-stats
-                (notifyMoonPhase)="onMoonPhaseChange($event)"
-                (notifyMoonIllumination)="onMoonIlluminationChange($event)"
-            ></app-moon-stats>
-        </div>
-        <div class="vertical-layout vertical-center moon-stats">
-            <p class="moon-phase">{{ moonPhase }}</p>
-            <p class="moon-illumination">{{ moonIllumination | percent}}</p>
+        <div *ngFor="let moonPhase of moonPhases">
+            <div class="horizontal-layout">
+                <div class="vertical-layout vertical-center moon-image">
+                    <app-moon-phase
+                        [dateInit]="moonPhase.dateInit"
+                        [dateOffset]="moonPhase.dateOffset"
+                        width="70"
+                        (notifyMoonStats)="moonPhase.onMoonStatsChange($event)"
+                    ></app-moon-phase>
+                </div>
+                <div class="vertical-layout vertical-center moon-stats">
+                    <p class="moon-phase">{{ moonPhase.date.toDateString() }}</p>
+                    <p class="moon-phase">{{ moonPhase.phase }}</p>
+                    <p class="moon-illumination">{{ moonPhase.illumination | percent}}</p>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -36,36 +43,38 @@
         <div>Local Sidereal Time: <u235-astro-time [hours]="observatory.lmst$ | async"></u235-astro-time></div>
 
         <br />
-        <table class="table">
-            <thead>
-                <th>Target</th>
-                <th>RA (J2000)</th>
-                <th>DEC (J2000)</th>
-                <th>RA (Now)</th>
-                <th>DEC (Now)</th>
-                <th>Azimuth</th>
-                <th>Altitude</th>
-                <th>Hour Angle</th>
-            </thead>
-            <tbody>
-                <tr *ngFor="let target of targets[observatoryIndex]">
-                    <td>{{ target.name$ | async }}</td>
-                    <ng-container *ngIf="target.geoEqu2000$ | async as geoEqu2000">
-                        <td><u235-astro-right-ascension [hours]="geoEqu2000.rightAscension"></u235-astro-right-ascension></td>
-                        <td><u235-astro-declination [degrees]="geoEqu2000.declination"></u235-astro-declination></td>
-                    </ng-container>
-                    <ng-container *ngIf="target.topoEquNow$ | async as topoEquNow">
-                        <td><u235-astro-right-ascension [hours]="topoEquNow.rightAscension"></u235-astro-right-ascension></td>
-                        <td><u235-astro-declination [degrees]="topoEquNow.declination"></u235-astro-declination></td>
-                    </ng-container>
-                    <ng-container *ngIf="target.topoHorNow$ | async as topoHorNow">
-                        <td><u235-astro-azimuth [degrees]="topoHorNow.azimuth" (notifyChange)="target.onAzimuthChange()" [u235-astro-flash]="target.azimuthChange.asObservable()"></u235-astro-azimuth></td>
-                        <td><u235-astro-altitude [degrees]="topoHorNow.altitude" (notifyChange)="target.onAltitudeChange()" [u235-astro-flash]="target.altitudeChange.asObservable()"></u235-astro-altitude></td>
-                    </ng-container>
-                    <td><u235-astro-hour-angle [hours]="target.hourAngle$ | async" (notifyChange)="target.onHourAngleChange()" [u235-astro-flash]="target.hourAngleChange.asObservable()"></u235-astro-hour-angle></td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <th>Target</th>
+                    <th>RA&nbsp;(J2000)</th>
+                    <th>DEC&nbsp;(J2000)</th>
+                    <th>RA&nbsp;(Now)</th>
+                    <th>DEC&nbsp;(Now)</th>
+                    <th>Azimuth</th>
+                    <th>Altitude</th>
+                    <th>Hour&nbsp;Angle</th>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let target of targets[observatoryIndex]">
+                        <td>{{ target.name$ | async }}</td>
+                        <ng-container *ngIf="target.geoEqu2000$ | async as geoEqu2000">
+                            <td><u235-astro-right-ascension [hours]="geoEqu2000.rightAscension"></u235-astro-right-ascension></td>
+                            <td><u235-astro-declination [degrees]="geoEqu2000.declination"></u235-astro-declination></td>
+                        </ng-container>
+                        <ng-container *ngIf="target.topoEquNow$ | async as topoEquNow">
+                            <td><u235-astro-right-ascension [hours]="topoEquNow.rightAscension"></u235-astro-right-ascension></td>
+                            <td><u235-astro-declination [degrees]="topoEquNow.declination"></u235-astro-declination></td>
+                        </ng-container>
+                        <ng-container *ngIf="target.topoHorNow$ | async as topoHorNow">
+                            <td><u235-astro-azimuth [degrees]="topoHorNow.azimuth" (notifyChange)="target.onAzimuthChange()" [u235-astro-flash]="target.azimuthChange.asObservable()"></u235-astro-azimuth></td>
+                            <td><u235-astro-altitude [degrees]="topoHorNow.altitude" (notifyChange)="target.onAltitudeChange()" [u235-astro-flash]="target.altitudeChange.asObservable()"></u235-astro-altitude></td>
+                        </ng-container>
+                        <td><u235-astro-hour-angle [hours]="target.hourAngle$ | async" (notifyChange)="target.onHourAngleChange()" [u235-astro-flash]="target.hourAngleChange.asObservable()"></u235-astro-hour-angle></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
         
     </div>
     <br />

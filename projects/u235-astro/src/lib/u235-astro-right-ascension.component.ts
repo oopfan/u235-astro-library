@@ -5,7 +5,7 @@ import { U235AstroService } from './u235-astro.service';
   selector: 'u235-astro-right-ascension',
   template: `
     <span>
-      {{hour}}<sup>h</sup> {{minute}}<sup>m</sup> {{second}}<sup>s</sup>
+      {{hour}}<sup>h</sup>&nbsp;{{minute}}<sup>m</sup>&nbsp;{{second}}<sup>s</sup>
     </span>
   `,
   styles: [

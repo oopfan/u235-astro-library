@@ -5,7 +5,7 @@ import { U235AstroService } from './u235-astro.service';
   selector: 'u235-astro-declination',
   template: `
     <span>
-      {{plusminus}}{{degree}}&deg; {{minute}}' {{second}}"
+      {{plusminus}}{{degree}}&deg;&nbsp;{{minute}}'&nbsp;{{second}}"
     </span>
   `,
   styles: [

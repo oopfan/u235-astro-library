@@ -6,6 +6,13 @@ import {
   U235AstroRootHelper, U235AstroService, U235AstroSyncSNR, U235AstroReactiveSolarSystem, U235AstroReactiveSchlyterMoon
 } from 'u235-astro';
 
+interface MoonStats {
+  date: Date;
+  phaseName: string;
+  phasePct: number;
+  illuminationPct: number;
+}
+
 class MyTarget extends U235AstroTarget {
   azimuthChange = new Subject<U235AstroFlashArg>();
   altitudeChange = new Subject<U235AstroFlashArg>();
@@ -30,12 +37,29 @@ class MyTarget extends U235AstroTarget {
 
 }
 
+class MyMoonPhase {
+  dateInit: Date;
+  dateOffset: number = 0;
+  date: Date;
+  phase: string;
+  illumination: number;
+
+  onMoonStatsChange(value: MoonStats) {
+    this.date = value.date;
+    this.phase = value.phaseName;
+    this.illumination = value.illuminationPct;
+  }
+
+}
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
+
+  moonPhases: MyMoonPhase[] = [];
 
   encode = (degree: number, minute: number, second: number): number => {
     return degree + (minute + second / 60) / 60;
@@ -90,18 +114,15 @@ export class AppComponent implements OnInit {
 
   constructor(private utility: U235AstroService) {}
 
-  moonPhase: string;
-  moonIllumination: number;
-
-  onMoonPhaseChange(value: string) {
-    this.moonPhase = value;
-  }
-
-  onMoonIlluminationChange(value: number) {
-    this.moonIllumination = value;
-  }
-
   ngOnInit(): void {
+    this.moonPhases.push(new MyMoonPhase());
+
+    for (let index = 1; index <= 5; index++) {
+      const moonPhase = new MyMoonPhase();
+      moonPhase.dateOffset = index*1000*60*60*24;
+      this.moonPhases.push(moonPhase);
+    }
+
     this.clock.date$ = interval(1000).pipe(startWith(0), map(() => new Date()));
     this.clock.init();
     this.solarSystem.connect(this.clock);

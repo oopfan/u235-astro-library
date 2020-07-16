@@ -5,7 +5,7 @@ import { U235AstroService } from './u235-astro.service';
   selector: 'u235-astro-azimuth',
   template: `
     <span>
-      +{{degree}}&deg; {{minute}}'
+      +{{degree}}&deg;&nbsp;{{minute}}'
     </span>
   `,
   styles: [

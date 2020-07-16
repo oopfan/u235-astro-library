@@ -1,24 +1,32 @@
-import { Component, OnInit, Output, EventEmitter, OnDestroy } from "@angular/core";
+import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from "@angular/core";
 import { Observable, interval, of, combineLatest, Subscription } from 'rxjs';
 import { startWith, map } from 'rxjs/operators';
 import { U235AstroClock, U235AstroReactiveSolarSystem, U235AstroReactiveSchlyterMoon, U235AstroObservatory, U235AstroTarget, U235AstroVector3D, U235AstroMatrix3D } from 'u235-astro';
 
 interface MoonStats {
+    date: Date;
+    phaseName: string;
     phasePct: number;
     illuminationPct: number;
 }
 
 @Component({
-    selector: 'app-moon-stats',
-    templateUrl: './moon-stats.component.html',
-    styleUrls: [ './moon-stats.component.css' ]
+    selector: 'app-moon-phase',
+    templateUrl: './moon-phase.component.html',
+    styleUrls: [ './moon-phase.component.css' ]
 })
-export class MoonStatsComponent implements OnInit, OnDestroy {
-    @Output() notifyMoonPhase:EventEmitter<string> = new EventEmitter();
-    @Output() notifyMoonIllumination:EventEmitter<number> = new EventEmitter();
+export class MoonPhaseComponent implements OnInit, OnDestroy {
+    @Input() dateInit: Date;
+    @Input() dateOffset: number = 0;
+    @Input() width = 100;
+    @Output() notifyMoonStats:EventEmitter<MoonStats> = new EventEmitter();
     moonStatsSubscription: Subscription;
 
     moonStats$: Observable<MoonStats>;
+
+    static instanceId = 0;
+    pathId = '';
+    clipId = '';
 
     private moonPhase = [
         {phasePct: 0.975, phaseStr: 'Full Moon'},
@@ -31,7 +39,7 @@ export class MoonStatsComponent implements OnInit, OnDestroy {
         {phasePct: -0.975, phaseStr: 'Waning Gibbous'}
     ];
     
-    getMoonPhase = (phasePct: number): string => {
+    private getPhaseName = (phasePct: number): string => {
         for (var i = 0, n = this.moonPhase.length; i < n; i++) {
             if (phasePct >= this.moonPhase[i].phasePct) {
                 return this.moonPhase[i].phaseStr;
@@ -40,7 +48,7 @@ export class MoonStatsComponent implements OnInit, OnDestroy {
         return this.moonPhase[0].phaseStr;
     }
     
-    getMoonPath = (phasePct: number, illuminationPct: number): string => {
+    getPhasePath = (phasePct: number, illuminationPct: number): string => {
         let pct = Math.sign(phasePct) * illuminationPct;
         pct = pct < -1 ? -1 : (pct >= 1 ? -1 : pct);
         const columnL = pct < 0 ? 1 : (pct >= 1 ? 1 : 0);
@@ -53,7 +61,11 @@ export class MoonStatsComponent implements OnInit, OnDestroy {
     }
     
     ngOnInit(): void {
-
+        MoonPhaseComponent.instanceId++;
+        this.pathId = "u235-astro-moon-phase-path" + MoonPhaseComponent.instanceId;
+        this.clipId = "u235-astro-moon-phase-clip" + MoonPhaseComponent.instanceId;
+    
+    
         const clock = new U235AstroClock();
         const solarSystem = new U235AstroReactiveSolarSystem();
         const moon = new U235AstroReactiveSchlyterMoon();
@@ -61,7 +73,12 @@ export class MoonStatsComponent implements OnInit, OnDestroy {
         const targetSun = new U235AstroTarget();
         const targetMoon = new U235AstroTarget();
     
-        clock.date$ = interval(60000).pipe(startWith(0), map(() => { return new Date(); }));
+        if (this.dateInit) {
+            clock.date$ = of(new Date(this.dateInit.getTime() + this.dateOffset));
+        }
+        else {
+            clock.date$ = interval(60000).pipe(startWith(0), map(() => { return new Date(Date.now() + this.dateOffset); }));
+        }
         clock.init();
     
         solarSystem.connect(clock);
@@ -84,10 +101,11 @@ export class MoonStatsComponent implements OnInit, OnDestroy {
         targetSun.init();
     
         this.moonStats$ = combineLatest(
+            clock.date$,
             targetMoon.geoEcl2000$,
             targetSun.geoEcl2000$
         ).pipe(
-            map(([moon, sun]) => {
+            map(([date, moon, sun]) => {
                 const moonVec = new U235AstroVector3D();
                 moonVec.setPolar(moon.longitude / 180 * Math.PI, moon.latitude / 180 * Math.PI, moon.distance);
                 const sunVec = new U235AstroVector3D();
@@ -103,14 +121,14 @@ export class MoonStatsComponent implements OnInit, OnDestroy {
                 const result = sunVec.getPolar();
                 let phasePct = -result[0] / Math.PI;
                 phasePct = Math.max(Math.min(phasePct, 1), -1);
-        
-                return { phasePct, illuminationPct };
+
+                const phaseName = this.getPhaseName(phasePct);
+                return { date, phaseName, phasePct, illuminationPct };
             })
         );
 
         this.moonStatsSubscription = this.moonStats$.subscribe(value => {
-            this.notifyMoonPhase.emit(this.getMoonPhase(value.phasePct));
-            this.notifyMoonIllumination.emit(value.illuminationPct);
+            this.notifyMoonStats.emit(value);
         });
 
     }

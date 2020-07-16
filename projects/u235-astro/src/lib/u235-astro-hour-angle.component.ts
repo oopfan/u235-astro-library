@@ -5,7 +5,7 @@ import { U235AstroService } from './u235-astro.service';
   selector: 'u235-astro-hour-angle',
   template: `
     <span>
-      {{hour}}<sup>h</sup> {{minute}}<sup>m</sup> {{eastwest}}
+      {{hour}}<sup>h</sup>&nbsp;{{minute}}<sup>m</sup>&nbsp;{{eastwest}}
     </span>
   `,
   styles: [
