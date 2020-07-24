@@ -59,6 +59,11 @@ export class AppComponent implements OnInit {
   
   sites = [
     {
+      name: 'RoboScopes, Spain',
+      latitude: this.encode(38, 13, 10.9),
+      longitude: -this.encode(6, 37, 54.3)
+    },
+    {
       name: 'New York, NY',
       latitude: this.encode(40, 46, 53),
       longitude: -this.encode(73, 58, 26)
