@@ -501,15 +501,16 @@ export class U235AstroSNR {
 
         this.skyNoise$ = this.skyElectronsPerSub$.pipe(map(value => U235AstroSyncSNR.calculateNoisePerSub(value)));
 
-        if (this.darkCurrent$ === undefined || this.exposure$ === undefined) {
-            this.darkSignalPerSub$ = throwError(new Error('Requires darkCurrent$ and exposure$'));
+        if (this.darkCurrent$ === undefined || this.exposure$ === undefined || this.binning$ === undefined) {
+            this.darkSignalPerSub$ = throwError(new Error('Requires darkCurrent$, exposure$, and binning$'));
         }
         else {
             this.darkSignalPerSub$ = combineLatest(
                 this.darkCurrent$,
-                this.exposure$
+                this.exposure$,
+                this.binning$
             ).pipe(
-                map(value => U235AstroSyncSNR.calculateElectronsPerSub(value[0], value[1]))
+                map(value => U235AstroSyncSNR.calculateElectronsPerSub(value[0], value[1]) * value[2] * value[2])
             );
         }
 

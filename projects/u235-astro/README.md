@@ -32,6 +32,10 @@ similar to what unfolds on the ground."
 
 ## Release Notes
 
+### Version 1.1.1
+* Modify *U235AstroSNR*, reactive variant. *darkSignalPerSub$* needed to be a function of
+*binning$*.
+
 ### Version 1.1.0
 * New *u235-astro-moon-phase* component. Add it to your markup with no arguments to display
 a 100px x 100px image of the Moon shown with the current phase. Every minute the image will
